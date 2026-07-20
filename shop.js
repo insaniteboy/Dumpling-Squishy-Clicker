@@ -147,9 +147,9 @@ const UPGRADES_DATA = [
 // ==========================================
 const SKINS_DATA = [
     // --- Exclusive Shop Permanent Skins ---
-    { id: 'ascendant',  name: 'Golden Ascendant',   cost: 0, css: 'radial-gradient(circle at 30% 30%, #fffde7, #fbc02d)', isExclusive: true, perkMult: 15.0 },
-    { id: 'galactic',   name: 'Galactic Overlord',  cost: 0, css: 'radial-gradient(circle at 30% 30%, #81d4fa, #01579b)', isExclusive: true, perkMult: 150.0 },
-    { id: 'sourcecode', name: 'The Source Code',    cost: 0, css: 'repeating-linear-gradient(0deg, #050505, #00ff66 2px, #000000 4px)', isExclusive: true, perkMult: 1000.0 },
+    { id: 'ascendant',  name: 'Golden Ascendant',   cost: Infinity, css: 'radial-gradient(circle at 30% 30%, #fffde7, #fbc02d)', isExclusive: true, perkMult: 10.0 },
+    { id: 'galactic',   name: 'Galactic Overlord',  cost: Infinity, css: 'radial-gradient(circle at 30% 30%, #81d4fa, #01579b)', isExclusive: true, perkMult: 25.0 },
+    { id: 'sourcecode', name: 'The Source Code',    cost: Infinity, css: 'repeating-linear-gradient(0deg, #050505, #00ff66 2px, #000000 4px)', isExclusive: true, perkMult: 100.0 },
 
     // --- Tier 1: Basic Flavors ---
     { id: 'classic',    name: 'Classic Dough',      cost: 0,        css: 'radial-gradient(circle at 30% 30%, #fff3e0, #ffcc80)' },
