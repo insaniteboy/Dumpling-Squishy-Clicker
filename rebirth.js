@@ -1,5 +1,5 @@
 // ==========================================
-// UPGRADED REBIRTH SYSTEM (Resets Upgrades, +0.05x Multi)
+// UPGRADED REBIRTH SYSTEM (Resets Upgrades, +0.01x Multi)
 // ==========================================
 
 // --- Inject Rebirth Styles ---
@@ -175,7 +175,7 @@ function initRebirthUI() {
                 <div class="rebirth-hero-card">
                     <div class="rebirth-hero-icon">👼</div>
                     <div class="rebirth-hero-title">Ascension</div>
-                    <div class="rebirth-hero-desc">Gain permanent +0.05x Multipliers for each rebirth! Rebirthing resets your score and all upgrades.</div>
+                    <div class="rebirth-hero-desc">Gain permanent +0.025x Multipliers for each rebirth! Rebirthing resets your score and all upgrades.</div>
                     <button id="rebirth-btn" class="rebirth-action-btn" onclick="triggerRebirth()">Perform Rebirth</button>
                 </div>
 
@@ -281,7 +281,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (state.unlockedSkins[skin]) skinCount++;
             }
             
-            const normalBonus = (state.rebirths || 0) * 0.05;
+            // Adjusted normal multiplier bonus increment to 0.01
+            const normalBonus = (state.rebirths || 0) * 0.25;
             const superBonus = (state.superRebirths || 0) * 25;
             
             currentMultiplier = 1 + (skinCount * 0.25) + normalBonus + superBonus;
@@ -322,10 +323,6 @@ function calculateMaxRebirths() {
     return { count: affordableCount, cost: totalCost, unitCost: unitCost };
 }
 
-function calculateMaxSuperRebirths() {
-    return Math.floor(state.rebirths / 1000);
-}
-
 // --- CORE FIX: Wipe Upgrades Mechanic ---
 function wipeUpgradesForRebirth() {
     // Erase all upgrade tiers[cite: 6]
@@ -340,6 +337,10 @@ function wipeUpgradesForRebirth() {
     state.sps = 0;
 }
 
+function calculateMaxSuperRebirths() {
+    return Math.floor(state.rebirths / 1000);
+}
+
 // --- Actions & Effects ---
 function triggerRebirth() {
     const maxData = calculateMaxRebirths();
@@ -348,14 +349,13 @@ function triggerRebirth() {
         playFlashEffect('white', 'ASCENSION!');
 
         // Consume score and add rebirth stats
-        state.score = 0; // True prestige sets score to 0
+        state.score = 0; 
         state.rebirths += maxData.count;
         state.rebirthActions = (state.rebirthActions || 0) + 1;
 
-        // Reset the upgrades and baseline power 
+        // Reset upgrades[cite: 6]
         wipeUpgradesForRebirth();
 
-        // Re-trigger global game recalculations immediately
         if (typeof calculateMultiplier === 'function') calculateMultiplier();
         if (typeof recalculateSPS === 'function') recalculateSPS();
         if (typeof renderUpgrades === 'function') renderUpgrades();
@@ -375,7 +375,6 @@ function triggerSuperRebirth() {
         state.superRebirths += affordable;
         state.superCurrency += affordable; 
         
-        // Super rebirths also count as a massive reset
         state.score = 0;
         wipeUpgradesForRebirth();
 
@@ -414,7 +413,8 @@ function updateRebirthUIValues() {
 
     // --- NORMAL REBIRTH ---
     const maxNormalData = calculateMaxRebirths();
-    const normalBonus = state.rebirths * 0.05;
+    // Adjusted display calculation to reflect 0.01x per normal rebirth
+    const normalBonus = state.rebirths * 0.025;
 
     const multDisp = document.getElementById('rebirth-mult-display');
     const countDisp = document.getElementById('rebirth-count-display');
