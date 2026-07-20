@@ -137,7 +137,7 @@
         offenses++;
         
         // Calculate penalty: 10s per offense, capped at 60s
-        let penaltySeconds = Math.min(offenses * 10, 10);
+        let penaltySeconds = Math.min(offenses * 2, 2);
 
         // Set the timestamp for when the punishment ends
         punishmentEndTime = Date.now() + (penaltySeconds * 1000);

@@ -209,7 +209,7 @@ function initRebirthUI() {
                 <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(255, 117, 140, 0.15), rgba(255, 126, 179, 0.05));">
                     <div class="rebirth-hero-icon">👼</div>
                     <div class="rebirth-hero-title">Ascension</div>
-                    <div class="rebirth-hero-desc">Gain permanent +0.025x Multipliers for each rebirth! Rebirthing completely resets your score and upgrades. Cost scales by 1.15x per total rebirth.</div>
+                    <div class="rebirth-hero-desc">Gain permanent +0.025x Multipliers for each rebirth! Rebirthing completely resets your score and upgrades. Cost scales by 1.05x per total rebirth.</div>
                     <button id="rebirth-btn" class="rebirth-action-btn btn-normal" onclick="triggerRebirth()">Perform Rebirth</button>
                 </div>
 
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- Geometric Multi-Buy Calculation for Normal Rebirths ---
 function calculateMaxRebirths() {
     const base = 15000;
-    const r = 1.15;
+    const r = 1.05;
     const currentR = state.rebirths || 0;
     
     // Cost of the next single rebirth based on total existing rebirths
@@ -376,7 +376,7 @@ function wipeUpgradesForRebirth() {
 
 // 1m Rebirths per Super Rebirth
 function calculateMaxSuperRebirths() {
-    return Math.floor(state.rebirths / 1000000);
+    return Math.floor(state.rebirths / 100000);
 }
 
 // --- Actions & Effects ---
@@ -489,10 +489,10 @@ function updateRebirthUIValues() {
     const superBtn = document.getElementById('super-rebirth-btn');
     if (superBtn) {
         if (maxSuper > 0) {
-            superBtn.innerText = `Buy Max (${formatShort(maxSuper)}) for ${formatShort(maxSuper * 1000000)} Rebirths`;
+            superBtn.innerText = `Buy Max (${formatShort(maxSuper)}) for ${formatShort(maxSuper * 100000)} Rebirths`;
             superBtn.classList.remove('disabled');
         } else {
-            const needed = 1000000 - (state.rebirths % 1000000);
+            const needed = 100000 - (state.rebirths % 100000);
             superBtn.innerText = `Need ${formatShort(needed)} More Rebirths`;
             superBtn.classList.add('disabled');
         }
