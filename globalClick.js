@@ -3,6 +3,11 @@
 // GLOBAL CLICK MANAGER
 // ==========================================
 
+// Disable the right-click context menu globally across the entire webpage
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const clickArea = document.getElementById('click-area');
     const mainDumpling = document.getElementById('main-dumpling');
