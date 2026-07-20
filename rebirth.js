@@ -1,5 +1,5 @@
 // ==========================================
-// UPGRADED REBIRTH SYSTEM (Resets Upgrades, +0.01x Multi)
+// UPGRADED REBIRTH SYSTEM (Geometric Scaling, 0.025x / 100x Multis, Resets)
 // ==========================================
 
 // --- Inject Rebirth Styles ---
@@ -10,25 +10,33 @@ rebirthStyles.innerHTML = `
         position: fixed;
         top: 20px;
         left: 20px;
-        background: linear-gradient(135deg, rgba(255, 117, 140, 0.8), rgba(123, 31, 162, 0.8));
+        background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 50%, #7b1fa2 100%);
+        background-size: 200% 200%;
+        animation: gradientShift 5s ease infinite;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         color: white;
-        border: 2px solid rgba(255,255,255,0.4);
+        border: 2px solid rgba(255,255,255,0.6);
         padding: 15px 25px;
         font-size: 1.2rem;
         font-weight: 900;
         border-radius: 50px;
         cursor: pointer;
-        box-shadow: 0 8px 25px rgba(255, 117, 140, 0.5);
+        box-shadow: 0 8px 25px rgba(255, 117, 140, 0.6);
         z-index: 100;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
     #open-rebirth-btn:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 12px 30px rgba(255, 117, 140, 0.8);
+        transform: translateY(-5px) scale(1.08);
+        box-shadow: 0 12px 35px rgba(255, 117, 140, 0.9);
         border-color: #fff;
     }
 
@@ -39,9 +47,9 @@ rebirthStyles.innerHTML = `
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        background: rgba(10, 5, 15, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         z-index: 999;
         display: flex;
         justify-content: center;
@@ -58,15 +66,15 @@ rebirthStyles.innerHTML = `
 
     /* Modal Box */
     .rebirth-modal {
-        width: 500px;
-        background: rgba(20, 5, 15, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 30px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        width: 520px;
+        background: linear-gradient(180deg, rgba(30, 15, 25, 0.95), rgba(15, 5, 15, 0.95));
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 24px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px rgba(255, 117, 140, 0.2);
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        transform: scale(0.8) translateY(50px);
+        transform: scale(0.8) translateY(40px);
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -79,16 +87,17 @@ rebirthStyles.innerHTML = `
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 20px 30px;
-        background: rgba(255,255,255,0.05);
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 22px 30px;
+        background: rgba(255,255,255,0.03);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
     .rebirth-modal-title {
-        font-size: 1.8rem;
+        font-size: 1.9rem;
         font-weight: 900;
         color: #fff;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        letter-spacing: 0.5px;
     }
 
     .close-modal-btn {
@@ -96,40 +105,54 @@ rebirthStyles.innerHTML = `
         border: none;
         color: white;
         font-size: 1.5rem;
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         cursor: pointer;
-        transition: 0.2s;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .close-modal-btn:hover {
-        background: rgba(255, 50, 50, 0.6);
-        transform: rotate(90deg);
+        background: rgba(255, 60, 60, 0.8);
+        transform: rotate(90deg) scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 60, 60, 0.6);
     }
 
     /* Shared Rebirth Styles */
-    .rebirth-sub-tabs { display: flex; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .rebirth-sub-tab { flex: 1; padding: 15px; text-align: center; font-weight: 800; font-size: 1.1rem; cursor: pointer; color: rgba(255,255,255,0.5); transition: 0.2s; border-bottom: 3px solid transparent; }
-    .rebirth-sub-tab.active { color: #fff; background: rgba(255,255,255,0.08); border-bottom: 3px solid #ffb3c6; }
+    .rebirth-sub-tabs { display: flex; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .rebirth-sub-tab { flex: 1; padding: 18px; text-align: center; font-weight: 800; font-size: 1.15rem; cursor: pointer; color: rgba(255,255,255,0.4); transition: 0.3s; border-bottom: 3px solid transparent; }
+    .rebirth-sub-tab:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.03); }
+    .rebirth-sub-tab.active { color: #fff; background: rgba(255,255,255,0.05); border-bottom: 3px solid #ff7eb3; text-shadow: 0 0 10px rgba(255, 126, 179, 0.5); }
     
     .rebirth-content-area { padding: 30px; display: none; flex-direction: column; gap: 20px; }
-    .rebirth-content-area.active { display: flex; }
+    .rebirth-content-area.active { display: flex; animation: fadeIn 0.3s ease; }
 
-    .rebirth-hero-card { background: linear-gradient(135deg, rgba(255, 179, 198, 0.2), rgba(78, 205, 196, 0.2)); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-    .rebirth-hero-icon { font-size: 4rem; margin-bottom: 10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
-    .rebirth-hero-title { font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 5px; }
-    .rebirth-hero-desc { font-size: 1rem; color: rgba(255, 255, 255, 0.8); font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    .rebirth-action-btn { background: linear-gradient(135deg, #ff758c, #ff7eb3); color: white; border: none; padding: 16px; font-size: 1.2rem; font-weight: 900; border-radius: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 117, 140, 0.4); transition: 0.2s; width: 100%; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .rebirth-action-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(255, 117, 140, 0.6); filter: brightness(1.1); }
+    .rebirth-hero-card { border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 25px; text-align: center; box-shadow: inset 0 0 20px rgba(255,255,255,0.05), 0 10px 25px rgba(0,0,0,0.3); }
+    .rebirth-hero-icon { font-size: 4.5rem; margin-bottom: 15px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.4)); }
+    .rebirth-hero-title { font-size: 2rem; font-weight: 900; color: #fff; margin-bottom: 10px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+    .rebirth-hero-desc { font-size: 1.05rem; color: rgba(255, 255, 255, 0.75); font-weight: 600; margin-bottom: 25px; line-height: 1.5; }
+
+    .rebirth-action-btn { color: white; border: none; padding: 18px; font-size: 1.2rem; font-weight: 900; border-radius: 16px; cursor: pointer; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 100%; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .rebirth-action-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); filter: brightness(1.15); }
     .rebirth-action-btn:active:not(:disabled) { transform: translateY(1px) scale(0.98); }
-    .rebirth-action-btn.disabled { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.3); cursor: not-allowed; box-shadow: none; }
+    .rebirth-action-btn.disabled { background: rgba(255, 255, 255, 0.05) !important; color: rgba(255, 255, 255, 0.3) !important; cursor: not-allowed; box-shadow: none !important; border: 1px solid rgba(255,255,255,0.1); }
+
+    .btn-normal { background: linear-gradient(135deg, #ff758c, #ff7eb3); box-shadow: 0 8px 20px rgba(255, 117, 140, 0.4); border: 1px solid #ff7eb3; }
+    .btn-normal:hover:not(:disabled) { box-shadow: 0 12px 30px rgba(255, 117, 140, 0.6), 0 0 15px #ff7eb3; }
+    
+    .btn-super { background: linear-gradient(135deg, #8e44ad, #3498db); box-shadow: 0 8px 20px rgba(142, 68, 173, 0.4); border: 1px solid #3498db; }
+    .btn-super:hover:not(:disabled) { box-shadow: 0 12px 30px rgba(142, 68, 173, 0.6), 0 0 15px #3498db; }
 
     .rebirth-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .rebirth-stat-box { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; padding: 15px; text-align: center; }
-    .rebirth-stat-label { font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
-    .rebirth-stat-value { font-size: 1.4rem; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+    .rebirth-stat-box { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 15px; text-align: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); transition: 0.3s; }
+    .rebirth-stat-box:hover { border-color: rgba(255,255,255,0.2); background: rgba(255, 255, 255, 0.02); }
+    .rebirth-stat-label { font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+    .rebirth-stat-value { font-size: 1.6rem; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
     /* Flash Effects */
     .rebirth-flash {
@@ -140,6 +163,17 @@ rebirthStyles.innerHTML = `
     }
 `;
 document.head.appendChild(rebirthStyles);
+
+// --- Number Formatting Utility ---
+function formatShort(num) {
+    if (num < 1000) return (num % 1 !== 0) ? num.toFixed(2) : Math.floor(num).toString();
+    const suffixes = ["", "k", "m", "b", "t", "qa", "qi", "sx", "sp", "oc", "no", "dc"];
+    const suffixIndex = Math.floor(Math.log10(num) / 3);
+    if (suffixIndex >= suffixes.length) return "Infinity"; 
+    const scaledNum = num / Math.pow(10, suffixIndex * 3);
+    // Format to 1 decimal place, stripping trailing zero (e.g. 15.0k -> 15k, 45.3k -> 45.3k)
+    return scaledNum.toFixed(1).replace(/\.0$/, '') + suffixes[suffixIndex]; 
+}
 
 // --- Inject Toggle Button and Modal ---
 function initRebirthUI() {
@@ -172,11 +206,11 @@ function initRebirthUI() {
             </div>
             
             <div id="rebirth-normal-panel" class="rebirth-content-area active">
-                <div class="rebirth-hero-card">
+                <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(255, 117, 140, 0.15), rgba(255, 126, 179, 0.05));">
                     <div class="rebirth-hero-icon">👼</div>
                     <div class="rebirth-hero-title">Ascension</div>
-                    <div class="rebirth-hero-desc">Gain permanent +0.025x Multipliers for each rebirth! Rebirthing resets your score and all upgrades.</div>
-                    <button id="rebirth-btn" class="rebirth-action-btn" onclick="triggerRebirth()">Perform Rebirth</button>
+                    <div class="rebirth-hero-desc">Gain permanent +0.025x Multipliers for each rebirth! Rebirthing completely resets your score and upgrades. Cost scales by 1.15x per total rebirth.</div>
+                    <button id="rebirth-btn" class="rebirth-action-btn btn-normal" onclick="triggerRebirth()">Perform Rebirth</button>
                 </div>
 
                 <div class="rebirth-stats-grid">
@@ -192,11 +226,11 @@ function initRebirthUI() {
             </div>
 
             <div id="rebirth-super-panel" class="rebirth-content-area">
-                <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(142, 68, 173, 0.25), rgba(41, 128, 185, 0.25));">
+                <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(142, 68, 173, 0.15), rgba(52, 152, 219, 0.05));">
                     <div class="rebirth-hero-icon">🌌</div>
                     <div class="rebirth-hero-title">Super Rebirth</div>
-                    <div class="rebirth-hero-desc">Sacrifice 1,000 Rebirths at a time to grant massive permanent power and Super Currency!</div>
-                    <button id="super-rebirth-btn" class="rebirth-action-btn" style="background: linear-gradient(135deg, #8e44ad, #3498db);" onclick="triggerSuperRebirth()">Perform Super Rebirth</button>
+                    <div class="rebirth-hero-desc">Sacrifice 1m Rebirths at a time to grant massive permanent power (+100x) and Super Currency! Resets Rebirths, Upgrades, and Skins.</div>
+                    <button id="super-rebirth-btn" class="rebirth-action-btn btn-super" onclick="triggerSuperRebirth()">Perform Super Rebirth</button>
                 </div>
 
                 <div class="rebirth-stats-grid">
@@ -249,7 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (typeof state !== 'undefined') {
         if (state.rebirths === undefined) state.rebirths = 0;
-        if (state.rebirthActions === undefined) state.rebirthActions = 0;
         if (state.superRebirths === undefined) state.superRebirths = 0;
         if (state.superCurrency === undefined) state.superCurrency = 0;
     }
@@ -263,7 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (parsed.rebirths !== undefined) state.rebirths = parsed.rebirths;
-                if (parsed.rebirthActions !== undefined) state.rebirthActions = parsed.rebirthActions;
                 if (parsed.superRebirths !== undefined) state.superRebirths = parsed.superRebirths;
                 if (parsed.superCurrency !== undefined) state.superCurrency = parsed.superCurrency;
             }
@@ -277,13 +309,15 @@ document.addEventListener("DOMContentLoaded", () => {
             originalCalculateMultiplier(); 
             
             let skinCount = 0;
-            for (let skin in state.unlockedSkins) {
-                if (state.unlockedSkins[skin]) skinCount++;
+            if (state.unlockedSkins) {
+                for (let skin in state.unlockedSkins) {
+                    if (state.unlockedSkins[skin]) skinCount++;
+                }
             }
             
-            // Adjusted normal multiplier bonus increment to 0.01
-            const normalBonus = (state.rebirths || 0) * 0.25;
-            const superBonus = (state.superRebirths || 0) * 25;
+            // Adjusted multipliers: +0.025x per Normal, +100x per Super
+            const normalBonus = (state.rebirths || 0) * 0.025;
+            const superBonus = (state.superRebirths || 0) * 100;
             
             currentMultiplier = 1 + (skinCount * 0.25) + normalBonus + superBonus;
             
@@ -307,38 +341,42 @@ document.addEventListener("DOMContentLoaded", () => {
     updateRebirthUIValues();
 });
 
-// --- Helper: Get Current Unit Cost ---
-function getCurrentUnitCost() {
-    const actions = state.rebirthActions || 0;
-    let cost = Math.floor(10000 * Math.pow(1.15, actions));
-    return Math.min(cost, 1000000000); 
-}
-
-// --- Multi-Buy Calculation ---
+// --- Geometric Multi-Buy Calculation for Normal Rebirths ---
 function calculateMaxRebirths() {
-    const unitCost = getCurrentUnitCost();
-    const affordableCount = Math.floor(state.score / unitCost);
-    const totalCost = affordableCount * unitCost;
+    const base = 15000;
+    const r = 1.15;
+    const currentR = state.rebirths || 0;
+    
+    // Cost of the next single rebirth based on total existing rebirths
+    const currentCost = base * Math.pow(r, currentR); 
 
-    return { count: affordableCount, cost: totalCost, unitCost: unitCost };
+    if (state.score < currentCost) {
+        return { count: 0, cost: 0, nextCost: currentCost };
+    }
+
+    // Formula to find 'k' max affordable rebirths using Geometric Series sum
+    const count = Math.floor(Math.log((state.score * (r - 1) / currentCost) + 1) / Math.log(r));
+    
+    // Total aggregated cost for those 'k' rebirths
+    const totalCost = currentCost * (Math.pow(r, count) - 1) / (r - 1);
+    
+    return { count: count, cost: totalCost, nextCost: currentCost };
 }
 
 // --- CORE FIX: Wipe Upgrades Mechanic ---
 function wipeUpgradesForRebirth() {
-    // Erase all upgrade tiers[cite: 6]
     if (state.upgrades) {
         for (let upgradeId in state.upgrades) {
             state.upgrades[upgradeId] = 0;
         }
     }
-    
-    // Hard reset base power values
     state.clickPower = 1;
     state.sps = 0;
 }
 
+// 1m Rebirths per Super Rebirth
 function calculateMaxSuperRebirths() {
-    return Math.floor(state.rebirths / 1000);
+    return Math.floor(state.rebirths / 1000000);
 }
 
 // --- Actions & Effects ---
@@ -348,12 +386,8 @@ function triggerRebirth() {
     if (maxData.count > 0) {
         playFlashEffect('white', 'ASCENSION!');
 
-        // Consume score and add rebirth stats
         state.score = 0; 
         state.rebirths += maxData.count;
-        state.rebirthActions = (state.rebirthActions || 0) + 1;
-
-        // Reset upgrades[cite: 6]
         wipeUpgradesForRebirth();
 
         if (typeof calculateMultiplier === 'function') calculateMultiplier();
@@ -370,13 +404,25 @@ function triggerSuperRebirth() {
 
     if (affordable > 0) {
         playFlashEffect('radial-gradient(circle, #ff00ff, #00ffff, #1a237e)', 'SUPER REBIRTH!');
-
-        state.rebirths -= (affordable * 1000); 
+        
         state.superRebirths += affordable;
         state.superCurrency += affordable; 
         
+        // Wipe Rebirths, Score, Upgrades, and Skins
+        state.rebirths = 0;
         state.score = 0;
         wipeUpgradesForRebirth();
+
+        if (state.unlockedSkins) {
+            for (let skin in state.unlockedSkins) {
+                state.unlockedSkins[skin] = false;
+            }
+            // Ensure default skin remains unlocked and equipped
+            state.unlockedSkins["default"] = true;
+            state.equippedSkin = "default";
+        }
+        
+        if (typeof renderSkins === 'function') renderSkins();
 
         if (typeof calculateMultiplier === 'function') calculateMultiplier();
         if (typeof recalculateSPS === 'function') recalculateSPS();
@@ -413,42 +459,41 @@ function updateRebirthUIValues() {
 
     // --- NORMAL REBIRTH ---
     const maxNormalData = calculateMaxRebirths();
-    // Adjusted display calculation to reflect 0.01x per normal rebirth
-    const normalBonus = state.rebirths * 0.025;
+    const normalBonus = state.rebirths * 0.025; // Updated to 0.025x
 
     const multDisp = document.getElementById('rebirth-mult-display');
     const countDisp = document.getElementById('rebirth-count-display');
-    if (multDisp) multDisp.innerText = `+${normalBonus.toFixed(2)}x`;
-    if (countDisp) countDisp.innerText = state.rebirths.toLocaleString();
+    if (multDisp) multDisp.innerText = `+${formatShort(normalBonus)}x`;
+    if (countDisp) countDisp.innerText = formatShort(state.rebirths);
 
     const rebirthBtn = document.getElementById('rebirth-btn');
     if (rebirthBtn) {
         if (maxNormalData.count > 0) {
-            rebirthBtn.innerText = `Buy Max (${maxNormalData.count.toLocaleString()}) for ${maxNormalData.cost.toLocaleString()} Squishes`;
+            rebirthBtn.innerText = `Buy Max (${formatShort(maxNormalData.count)}) for ${formatShort(maxNormalData.cost)} Squishes`;
             rebirthBtn.classList.remove('disabled');
         } else {
-            rebirthBtn.innerText = `Need ${maxNormalData.unitCost.toLocaleString()} Squishes`;
+            rebirthBtn.innerText = `Need ${formatShort(maxNormalData.nextCost)} Squishes`;
             rebirthBtn.classList.add('disabled');
         }
     }
 
     // --- SUPER REBIRTH ---
     const maxSuper = calculateMaxSuperRebirths();
-    const superBonus = state.superRebirths * 25;
+    const superBonus = state.superRebirths * 100; // Updated to 100x
 
     const sMultDisp = document.getElementById('super-mult-display');
     const sCurrDisp = document.getElementById('super-currency-display');
-    if (sMultDisp) sMultDisp.innerText = `+${superBonus}x`;
-    if (sCurrDisp) sCurrDisp.innerText = `${state.superCurrency} 🌀`;
+    if (sMultDisp) sMultDisp.innerText = `+${formatShort(superBonus)}x`;
+    if (sCurrDisp) sCurrDisp.innerText = `${formatShort(state.superCurrency)} 🌀`;
 
     const superBtn = document.getElementById('super-rebirth-btn');
     if (superBtn) {
         if (maxSuper > 0) {
-            superBtn.innerText = `Buy Max (${maxSuper.toLocaleString()}) for ${(maxSuper * 1000).toLocaleString()} Rebirths`;
+            superBtn.innerText = `Buy Max (${formatShort(maxSuper)}) for ${formatShort(maxSuper * 1000000)} Rebirths`;
             superBtn.classList.remove('disabled');
         } else {
-            const needed = 1000 - (state.rebirths % 1000);
-            superBtn.innerText = `Need ${needed.toLocaleString()} More Rebirths`;
+            const needed = 1000000 - (state.rebirths % 1000000);
+            superBtn.innerText = `Need ${formatShort(needed)} More Rebirths`;
             superBtn.classList.add('disabled');
         }
     }

@@ -288,7 +288,8 @@
             const finalClickPower = state.clickPower * currentMultiplier;
             state.score += finalClickPower;
             
-            createFloatingText(e.clientX, e.clientY, `+${finalClickPower.toLocaleString(undefined, {maximumFractionDigits: 1})}`);
+            // Change this line inside the mousedown event listener:
+            createFloatingText(e.clientX, e.clientY, `+${formatNumber(finalClickPower)}`);
             updateUI();
             updateButtons();
         });
@@ -340,10 +341,10 @@ function recalculateSPS() {
         }
 
         // --- UI Updates ---
-        function updateUI() {
-            scoreDisplay.innerText = `${Math.floor(state.score).toLocaleString()} Squishes`;
-            spsDisplay.innerText = totalSPS.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
-        }
+function updateUI() {
+    scoreDisplay.innerText = `${formatNumber(state.score)} Squishes`;
+    spsDisplay.innerText = formatNumber(totalSPS);
+}
 
         function createFloatingText(x, y, text) {
             const el = document.createElement('div');
@@ -396,7 +397,7 @@ function recalculateSPS() {
                     <div class="card-icon">${u.icon}</div>
                     <div class="card-info">
                         <div class="card-name">${u.name}</div>
-                        <div class="card-cost" id="cost-${u.id}">🛒 ${currentCost.toLocaleString()}</div>
+<div class="card-cost" id="cost-${u.id}">🛒 ${formatNumber(currentCost)}</div>
                         <div class="card-desc">${u.desc}</div>
                     </div>
                     <div class="card-badge" id="count-${u.id}">${count}</div>
@@ -416,7 +417,7 @@ function recalculateSPS() {
                 recalculateSPS();
                 
                 document.getElementById(`count-${id}`).innerText = state.upgrades[id];
-                document.getElementById(`cost-${id}`).innerText = `🛒 ${getCost(upg.baseCost, state.upgrades[id]).toLocaleString()}`;
+                document.getElementById(`cost-${id}`).innerText = `🛒 ${formatNumber(getCost(upg.baseCost, state.upgrades[id]))}`;
                 updateUI();
                 updateButtons();
             }
@@ -435,7 +436,7 @@ function recalculateSPS() {
                 card.id = `skin-${skin.id}`;
                 card.onclick = () => handleSkinClick(skin.id);
 
-                let statusText = isEquipped ? '✨ Equipped' : (isUnlocked ? '👕 Click to Equip' : `🛒 ${skin.cost.toLocaleString()}`);
+                let statusText = isEquipped ? '✨ Equipped' : (isUnlocked ? '👕 Click to Equip' : `🛒 ${formatNumber(skin.cost)}`);
 
                 card.innerHTML = `
                     <div class="skin-preview" style="background: ${skin.css}"></div>
@@ -534,6 +535,22 @@ function recalculateSPS() {
                 }
             }
         }
+
+        // --- Utility: Format Large Numbers ---
+function formatNumber(num) {
+    if (num < 1000) return Math.floor(num).toString();
+    
+    const suffixes = ["", "k", "m", "b", "t", "qa", "qi", "sx", "sp", "oc", "no", "dc"];
+    const suffixIndex = Math.floor(Math.log10(num) / 3);
+    
+    // Safety check in case numbers get impossibly large
+    if (suffixIndex >= suffixes.length) return "Infinity"; 
+    
+    const scaledNum = num / Math.pow(10, suffixIndex * 3);
+    
+    // Fix to 2 decimal places and remove trailing zeros (e.g., 10.00k -> 10k)
+    return scaledNum.toFixed(2).replace(/\.00$/, '') + suffixes[suffixIndex];
+}
 
         window.onload = init;
     </script>
