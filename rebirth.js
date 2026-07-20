@@ -1,313 +1,313 @@
 // ==========================================
-// REBIRTH SYSTEM (Rebirths & Super Rebirths)
+// UPGRADED REBIRTH SYSTEM (Modals, Max-Buy, Effects)
 // ==========================================
 
-// --- Inject Rebirth Styles into Document ---
+// --- Inject Rebirth Styles ---
 const rebirthStyles = document.createElement('style');
 rebirthStyles.innerHTML = `
-    /* Rebirth Panel & Container Styling */
-    .rebirth-panel-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        background: rgba(15, 5, 20, 0.3);
+    /* Floating Rebirth Button */
+    #open-rebirth-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(135deg, rgba(255, 117, 140, 0.8), rgba(123, 31, 162, 0.8));
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.4);
+        padding: 15px 25px;
+        font-size: 1.2rem;
+        font-weight: 900;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(255, 117, 140, 0.5);
+        z-index: 100;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
-    .rebirth-sub-tabs {
+    #open-rebirth-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 12px 30px rgba(255, 117, 140, 0.8);
+        border-color: #fff;
+    }
+
+    /* Modal Overlay */
+    .rebirth-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 999;
         display: flex;
-        background: rgba(0,0,0,0.3);
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+
+    .rebirth-modal-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    /* Modal Box */
+    .rebirth-modal {
+        width: 500px;
+        background: rgba(20, 5, 15, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 30px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: scale(0.8) translateY(50px);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .rebirth-modal-overlay.open .rebirth-modal {
+        transform: scale(1) translateY(0);
+    }
+
+    /* Header & Close Button */
+    .rebirth-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 30px;
+        background: rgba(255,255,255,0.05);
         border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
-    .rebirth-sub-tab {
-        flex: 1;
-        padding: 15px;
-        text-align: center;
-        font-weight: 800;
-        font-size: 1.05rem;
-        cursor: pointer;
-        color: rgba(255,255,255,0.5);
-        transition: all 0.2s ease;
-        border-bottom: 3px solid transparent;
-    }
-
-    .rebirth-sub-tab.active {
-        color: #fff;
-        background: rgba(255,255,255,0.08);
-        border-bottom: 3px solid #ffb3c6;
-    }
-
-    .rebirth-content-area {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: none;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .rebirth-content-area.active {
-        display: flex;
-    }
-
-    /* Big Action Hero Card */
-    .rebirth-hero-card {
-        background: linear-gradient(135deg, rgba(255, 179, 198, 0.2), rgba(78, 205, 196, 0.2));
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 20px;
-        padding: 25px 20px;
-        text-align: center;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-
-    .rebirth-hero-icon {
-        font-size: 3.5rem;
-        margin-bottom: 10px;
-        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-    }
-
-    .rebirth-hero-title {
-        font-size: 1.5rem;
+    .rebirth-modal-title {
+        font-size: 1.8rem;
         font-weight: 900;
         color: #fff;
-        margin-bottom: 5px;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
     }
 
-    .rebirth-hero-desc {
-        font-size: 0.95rem;
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 700;
-        margin-bottom: 20px;
-        line-height: 1.4;
-    }
-
-    /* Action Trigger Button */
-    .rebirth-action-btn {
-        background: linear-gradient(135deg, #ff758c, #ff7eb3);
-        color: white;
+    .close-modal-btn {
+        background: rgba(255,255,255,0.1);
         border: none;
-        padding: 14px 28px;
-        font-size: 1.15rem;
-        font-weight: 900;
-        border-radius: 14px;
+        color: white;
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         cursor: pointer;
-        box-shadow: 0 8px 20px rgba(255, 117, 140, 0.4);
-        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        width: 100%;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: 0.2s;
     }
 
-    .rebirth-action-btn:hover:not(:disabled) {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 12px 25px rgba(255, 117, 140, 0.6);
-        filter: brightness(1.1);
+    .close-modal-btn:hover {
+        background: rgba(255, 50, 50, 0.6);
+        transform: rotate(90deg);
     }
 
-    .rebirth-action-btn:active:not(:disabled) {
-        transform: translateY(1px) scale(0.98);
-    }
+    /* Shared Rebirth Styles from original */
+    .rebirth-sub-tabs { display: flex; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .rebirth-sub-tab { flex: 1; padding: 15px; text-align: center; font-weight: 800; font-size: 1.1rem; cursor: pointer; color: rgba(255,255,255,0.5); transition: 0.2s; border-bottom: 3px solid transparent; }
+    .rebirth-sub-tab.active { color: #fff; background: rgba(255,255,255,0.08); border-bottom: 3px solid #ffb3c6; }
+    
+    .rebirth-content-area { padding: 30px; display: none; flex-direction: column; gap: 20px; }
+    .rebirth-content-area.active { display: flex; }
 
-    .rebirth-action-btn.disabled {
-        background: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.3);
-        cursor: not-allowed;
-        box-shadow: none;
-        transform: none;
-        filter: none;
-    }
+    .rebirth-hero-card { background: linear-gradient(135deg, rgba(255, 179, 198, 0.2), rgba(78, 205, 196, 0.2)); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .rebirth-hero-icon { font-size: 4rem; margin-bottom: 10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+    .rebirth-hero-title { font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 5px; }
+    .rebirth-hero-desc { font-size: 1rem; color: rgba(255, 255, 255, 0.8); font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
 
-    /* Info Status Cards */
-    .rebirth-stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
+    .rebirth-action-btn { background: linear-gradient(135deg, #ff758c, #ff7eb3); color: white; border: none; padding: 16px; font-size: 1.2rem; font-weight: 900; border-radius: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 117, 140, 0.4); transition: 0.2s; width: 100%; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .rebirth-action-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(255, 117, 140, 0.6); filter: brightness(1.1); }
+    .rebirth-action-btn:active:not(:disabled) { transform: translateY(1px) scale(0.98); }
+    .rebirth-action-btn.disabled { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.3); cursor: not-allowed; box-shadow: none; }
 
-    .rebirth-stat-box {
-        background: rgba(255, 255, 255, 0.07);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 14px;
-        padding: 15px;
-        text-align: center;
-    }
+    .rebirth-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .rebirth-stat-box { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; padding: 15px; text-align: center; }
+    .rebirth-stat-label { font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+    .rebirth-stat-value { font-size: 1.4rem; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 
-    .rebirth-stat-label {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .rebirth-stat-value {
-        font-size: 1.25rem;
-        font-weight: 900;
-        color: #fff;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    /* Flash Effects */
+    .rebirth-flash {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: 10000; pointer-events: none; opacity: 1;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 8rem; font-weight: 900; color: white; text-shadow: 0 0 50px rgba(255,255,255,0.8);
     }
 `;
 document.head.appendChild(rebirthStyles);
 
-// --- Inject Rebirth Panel into Left Side Container ---
+// --- Inject Toggle Button and Modal ---
 function initRebirthUI() {
-    const gameContainer = document.getElementById('game-container');
-    if (!gameContainer) return;
+    // Inject the Floating Open Button
+    const openBtn = document.createElement('button');
+    openBtn.id = 'open-rebirth-btn';
+    openBtn.innerHTML = '✨ Ascension';
+    openBtn.onclick = toggleRebirthModal;
+    document.body.appendChild(openBtn);
 
-    // Create Left Panel Wrapper
-    const leftPanel = document.createElement('div');
-    leftPanel.className = 'left-panel';
-    leftPanel.style.cssText = `
-        width: 450px;
-        background: var(--panel-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-right: 1px solid rgba(255,255,255,0.2);
-        display: flex;
-        flex-direction: column;
-        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
-        z-index: 5;
-    `;
+    // Inject the Modal Wrapper
+    const modalOverlay = document.createElement('div');
+    modalOverlay.id = 'rebirth-modal-overlay';
+    modalOverlay.className = 'rebirth-modal-overlay';
+    
+    // Clicking outside the modal closes it
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) toggleRebirthModal();
+    });
 
-    leftPanel.innerHTML = `
-        <div class="tabs">
-            <div class="tab active" onclick="switchLeftTab('rebirths')">Rebirths</div>
-            <div class="tab" onclick="switchLeftTab('super')">Super Rebirth</div>
-        </div>
-        
-        <div id="rebirth-main-panel" class="panel-content active">
-            <div class="rebirth-panel-container">
+    modalOverlay.innerHTML = `
+        <div class="rebirth-modal">
+            <div class="rebirth-modal-header">
+                <div class="rebirth-modal-title">Ascension Menu</div>
+                <button class="close-modal-btn" onclick="toggleRebirthModal()">✕</button>
+            </div>
+
+            <div class="rebirth-sub-tabs">
+                <div class="rebirth-sub-tab active" onclick="switchRebirthTab('normal')">Normal Rebirth</div>
+                <div class="rebirth-sub-tab" onclick="switchRebirthTab('super')">Super Rebirth</div>
+            </div>
+            
+            <div id="rebirth-normal-panel" class="rebirth-content-area active">
                 <div class="rebirth-hero-card">
-                    <div class="rebirth-hero-icon">
-                        <img src="https://preview.redd.it/where-can-i-get-all-these-icons-that-almost-every-roblox-v0-3xxbtl8zzxgb1.png?width=420&format=png&auto=webp&s=42a7876c1602ebfff91f17075bc66c5b87823512" alt="Rebirth" style="width: 64px; height: 64px; object-fit: contain;">
-                    </div>
-                    <div class="rebirth-hero-title">Ascension Rebirth</div>
-                    <div class="rebirth-hero-desc">Reset your score and upgrades to gain permanent Multiplier boosts and currency!</div>
+                    <div class="rebirth-hero-icon">👼</div>
+                    <div class="rebirth-hero-title">Ascension</div>
+                    <div class="rebirth-hero-desc">Reset your squishes and upgrades to gain permanent Multipliers! You will automatically buy as many Rebirths as you can afford.</div>
                     <button id="rebirth-btn" class="rebirth-action-btn" onclick="triggerRebirth()">Perform Rebirth</button>
                 </div>
 
                 <div class="rebirth-stats-grid">
                     <div class="rebirth-stat-box">
-                        <div class="rebirth-stat-label">Current Multiplier</div>
+                        <div class="rebirth-stat-label">Current Multi</div>
                         <div class="rebirth-stat-value" id="rebirth-mult-display">+0.0x</div>
                     </div>
                     <div class="rebirth-stat-box">
-                        <div class="rebirth-stat-label">Next Rebirth Cost</div>
-                        <div class="rebirth-stat-value" id="rebirth-cost-display">10,000</div>
-                    </div>
-                    <div class="rebirth-stat-box" style="grid-column: span 2;">
-                        <div class="rebirth-stat-label">Total Rebirths Owned</div>
+                        <div class="rebirth-stat-label">Total Owned</div>
                         <div class="rebirth-stat-value" id="rebirth-count-display">0</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="super-rebirth-panel" class="panel-content">
-            <div class="rebirth-panel-container">
+            <div id="rebirth-super-panel" class="rebirth-content-area">
                 <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(142, 68, 173, 0.25), rgba(41, 128, 185, 0.25));">
                     <div class="rebirth-hero-icon">🌌</div>
                     <div class="rebirth-hero-title">Super Rebirth</div>
-                    <div class="rebirth-hero-desc">Sacrifice all Rebirth progress, scores, and upgrades. Grants immense permanent power and Super Rebirth currency!</div>
-                    <button id="super-rebirth-btn" class="rebirth-action-btn" style="background: linear-gradient(135deg, #8e44ad, #3498db); box-shadow: 0 8px 20px rgba(142, 68, 173, 0.4);" onclick="triggerSuperRebirth()">Perform Super Rebirth</button>
+                    <div class="rebirth-hero-desc">Sacrifice 1,000 Rebirths at a time. Resets all progress but grants massive permanent power and Super Currency!</div>
+                    <button id="super-rebirth-btn" class="rebirth-action-btn" style="background: linear-gradient(135deg, #8e44ad, #3498db);" onclick="triggerSuperRebirth()">Perform Super Rebirth</button>
                 </div>
 
                 <div class="rebirth-stats-grid">
                     <div class="rebirth-stat-box">
-                        <div class="rebirth-stat-label">Super Multiplier</div>
+                        <div class="rebirth-stat-label">Super Multi</div>
                         <div class="rebirth-stat-value" id="super-mult-display">+0x</div>
                     </div>
                     <div class="rebirth-stat-box">
                         <div class="rebirth-stat-label">Super Currency</div>
                         <div class="rebirth-stat-value" id="super-currency-display">0 🌀</div>
                     </div>
-                    <div class="rebirth-stat-box" style="grid-column: span 2;">
-                        <div class="rebirth-stat-label">Total Super Rebirths</div>
-                        <div class="rebirth-stat-value" id="super-count-display">0</div>
-                    </div>
                 </div>
             </div>
         </div>
     `;
 
-    // Insert left panel before the squishy-section container
-    const squishySection = document.getElementById('click-area');
-    gameContainer.insertBefore(leftPanel, squishySection);
+    document.body.appendChild(modalOverlay);
 }
 
-// --- Left Panel Sub-Tab Switcher ---
-function switchLeftTab(tabName) {
-    const leftPanel = document.querySelector('.left-panel');
-    if (!leftPanel) return;
+// --- Toggle & Tabs Logic ---
+function toggleRebirthModal() {
+    const modal = document.getElementById('rebirth-modal-overlay');
+    if (modal.classList.contains('open')) {
+        modal.classList.remove('open');
+    } else {
+        updateRebirthUIValues(); // Refresh stats before opening
+        modal.classList.add('open');
+    }
+}
 
-    const tabs = leftPanel.querySelectorAll('.tab');
-    const panels = leftPanel.querySelectorAll('.panel-content');
+function switchRebirthTab(tabName) {
+    const tabs = document.querySelectorAll('.rebirth-sub-tab');
+    const panels = document.querySelectorAll('.rebirth-content-area');
 
     tabs.forEach(t => t.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
 
-    if (tabName === 'rebirths') {
+    if (tabName === 'normal') {
         tabs[0].classList.add('active');
-        document.getElementById('rebirth-main-panel').classList.add('active');
+        document.getElementById('rebirth-normal-panel').classList.add('active');
     } else {
         tabs[1].classList.add('active');
-        document.getElementById('super-rebirth-panel').classList.add('active');
+        document.getElementById('rebirth-super-panel').classList.add('active');
     }
 }
 
-// --- Extend State & Initialization Logic ---
+// --- Extend Global State ---
 document.addEventListener("DOMContentLoaded", () => {
-    // Inject the panel structure first
     initRebirthUI();
 
-    // Safely inject properties into global state if they don't exist yet
     if (typeof state !== 'undefined') {
         if (state.rebirths === undefined) state.rebirths = 0;
-        if (state.rebirthCost === undefined) state.rebirthCost = 10000;
         if (state.superRebirths === undefined) state.superRebirths = 0;
         if (state.superCurrency === undefined) state.superCurrency = 0;
     }
 
-    // Hook into main update loop elements safely
     const originalUpdateUI = window.updateUI;
     if (typeof originalUpdateUI === 'function') {
         window.updateUI = function() {
             originalUpdateUI();
-            updateRebirthUIValues();
+            updateRebirthUIValues(); // Keeps modal buttons updated as you click
         };
     }
-
-    // Initial render call
     updateRebirthUIValues();
 });
 
-// --- Core Rebirth Mechanics ---
-function getNextRebirthCost() {
-    // Fallback calculation if cost scales per rebirth dynamically
-    let base = 10000;
-    let cost = base * Math.pow(1.15, state.rebirths);
-    return Math.floor(cost);
+// --- Multi-Buy Math Functions ---
+function calculateMaxRebirths() {
+    let affordableCount = 0;
+    let totalCost = 0;
+    let simulatedScore = state.score;
+    let tempRebirths = state.rebirths;
+
+    while (true) {
+        let nextCost = Math.floor(10000 * Math.pow(1.15, tempRebirths));
+        if (simulatedScore >= nextCost) {
+            simulatedScore -= nextCost;
+            totalCost += nextCost;
+            affordableCount++;
+            tempRebirths++;
+        } else {
+            break;
+        }
+    }
+    return { count: affordableCount, cost: totalCost };
 }
 
+function calculateMaxSuperRebirths() {
+    let affordableCount = Math.floor(state.rebirths / 1000);
+    return affordableCount;
+}
+
+// --- Trigger Actions & Effects ---
 function triggerRebirth() {
-    const cost = getNextRebirthCost();
-    if (state.score >= cost) {
-        // Reset Score and Upgrades
-        state.score = 0;
+    const maxData = calculateMaxRebirths();
+    
+    if (maxData.count > 0) {
+        // Play Visual Effect
+        playFlashEffect('white', 'ASCENSION!');
+
+        // Apply Costs and Rewards
+        state.score -= maxData.cost;
+        state.rebirths += maxData.count;
+        
+        // Wipe Upgrades
         if (typeof UPGRADES_DATA !== 'undefined') {
             UPGRADES_DATA.forEach(u => state.upgrades[u.id] = 0);
         }
 
-        // Increment Rebirth stats
-        state.rebirths += 1;
-        
-        // Increase cost by 1.15x strictly upon re-birth event
-        state.rebirthCost = getNextRebirthCost();
-
-        // Refresh game structures
+        // Refresh Game State
         if (typeof recalculateSPS === 'function') recalculateSPS();
         if (typeof renderUpgrades === 'function') renderUpgrades();
         updateRebirthUIValues();
@@ -317,22 +317,24 @@ function triggerRebirth() {
 }
 
 function triggerSuperRebirth() {
-    // 1 Super Rebirth requires 1000 normal rebirths
-    const requiredRebirths = 1000;
-    if (state.rebirths >= requiredRebirths) {
-        // Reset everything BESIDES super rebirths, super currency, and permanent multi data
+    const affordable = calculateMaxSuperRebirths();
+
+    if (affordable > 0) {
+        // Play Massive Visual Effect
+        playFlashEffect('radial-gradient(circle, #ff00ff, #00ffff, #1a237e)', 'SUPER REBIRTH!');
+
+        // Reset Everything
         state.score = 0;
-        state.rebirths = 0;
-        state.rebirthCost = 10000;
+        state.rebirths -= (affordable * 1000); // Deduct the rebirths used
         if (typeof UPGRADES_DATA !== 'undefined') {
             UPGRADES_DATA.forEach(u => state.upgrades[u.id] = 0);
         }
 
         // Grant Super Rewards
-        state.superRebirths += 1;
-        state.superCurrency += 1; // 1 Super Rebirth = 1 Super Currency (or used as currency resource)
+        state.superRebirths += affordable;
+        state.superCurrency += affordable; 
 
-        // Refresh game structures
+        // Refresh Game State
         if (typeof recalculateSPS === 'function') recalculateSPS();
         if (typeof renderUpgrades === 'function') renderUpgrades();
         updateRebirthUIValues();
@@ -341,50 +343,64 @@ function triggerSuperRebirth() {
     }
 }
 
-// --- Dynamic UI Refresh for Rebirth Stats ---
+// --- Visual Effects ---
+function playFlashEffect(background, text) {
+    const flash = document.createElement('div');
+    flash.className = 'rebirth-flash';
+    flash.style.background = background;
+    flash.innerText = text;
+    
+    // Add transition directly
+    flash.style.transition = 'opacity 1.5s cubic-bezier(0.165, 0.84, 0.44, 1)';
+    document.body.appendChild(flash);
+
+    // Trigger fade out after a tiny delay to ensure transition applies
+    setTimeout(() => {
+        flash.style.opacity = '0';
+        flash.style.transform = 'scale(1.2)';
+    }, 50);
+
+    // Remove element completely after animation
+    setTimeout(() => {
+        flash.remove();
+    }, 1550);
+}
+
+// --- Dynamic UI Refresh ---
 function updateRebirthUIValues() {
     if (typeof state === 'undefined') return;
 
-    // Calculations
-    const currentRebirthCost = getNextRebirthCost();
-    const normalMultiplierBonus = state.rebirths * 0.1; // 1 rebirth = 0.1 multiplier boost
-    const superMultiplierBonus = state.superRebirths * 25; // 1 super rebirth = 25x permanent multi
+    // --- NORMAL REBIRTH ---
+    const maxNormalData = calculateMaxRebirths();
+    const normalBonus = state.rebirths * 0.1;
+    const nextSingleCost = Math.floor(10000 * Math.pow(1.15, state.rebirths));
 
-    // DOM Elements updates safely
-    const multDisp = document.getElementById('rebirth-mult-display');
-    const costDisp = document.getElementById('rebirth-cost-display');
-    const countDisp = document.getElementById('rebirth-count-display');
+    document.getElementById('rebirth-mult-display').innerText = `+${normalBonus.toFixed(1)}x`;
+    document.getElementById('rebirth-count-display').innerText = state.rebirths.toLocaleString();
+
     const rebirthBtn = document.getElementById('rebirth-btn');
-
-    if (multDisp) multDisp.innerText = `+${normalMultiplierBonus.toFixed(1)}x Multi`;
-    if (costDisp) costDisp.innerText = currentRebirthCost.toLocaleString();
-    if (countDisp) countDisp.innerText = state.rebirths.toLocaleString();
-
-    if (rebirthBtn) {
-        if (state.score >= currentRebirthCost) {
-            rebirthBtn.classList.remove('disabled');
-        } else {
-            rebirthBtn.classList.add('disabled');
-        }
+    if (maxNormalData.count > 0) {
+        rebirthBtn.innerText = `Buy Max (${maxNormalData.count}) for ${maxNormalData.cost.toLocaleString()} Squishes`;
+        rebirthBtn.classList.remove('disabled');
+    } else {
+        rebirthBtn.innerText = `Need ${nextSingleCost.toLocaleString()} Squishes`;
+        rebirthBtn.classList.add('disabled');
     }
 
-    // Super Rebirth Elements
-    const superMultDisp = document.getElementById('super-mult-display');
-    const superCurrDisp = document.getElementById('super-currency-display');
-    const superCountDisp = document.getElementById('super-count-display');
-    const superRebirthBtn = document.getElementById('super-rebirth-btn');
+    // --- SUPER REBIRTH ---
+    const maxSuper = calculateMaxSuperRebirths();
+    const superBonus = state.superRebirths * 25;
 
-    if (superMultDisp) superMultDisp.innerText = `+${superMultiplierBonus}x Perm Multi`;
-    if (superCurrDisp) superCurrDisp.innerText = `${state.superCurrency} 🌀`;
-    if (superCountDisp) superCountDisp.innerText = state.superRebirths.toLocaleString();
+    document.getElementById('super-mult-display').innerText = `+${superBonus}x`;
+    document.getElementById('super-currency-display').innerText = `${state.superCurrency} 🌀`;
 
-    if (superRebirthBtn) {
-        const canSuper = state.rebirths >= 1000;
-        superRebirthBtn.innerText = canSuper ? "Perform Super Rebirth" : `Requires 1,000 Rebirths (${state.rebirths}/1,000)`;
-        if (canSuper) {
-            superRebirthBtn.classList.remove('disabled');
-        } else {
-            superRebirthBtn.classList.add('disabled');
-        }
+    const superBtn = document.getElementById('super-rebirth-btn');
+    if (maxSuper > 0) {
+        superBtn.innerText = `Buy Max (${maxSuper}) for ${(maxSuper * 1000).toLocaleString()} Rebirths`;
+        superBtn.classList.remove('disabled');
+    } else {
+        const needed = 1000 - (state.rebirths % 1000);
+        superBtn.innerText = `Need ${needed.toLocaleString()} More Rebirths`;
+        superBtn.classList.add('disabled');
     }
 }
