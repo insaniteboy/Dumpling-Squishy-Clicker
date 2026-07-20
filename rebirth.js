@@ -1,5 +1,5 @@
 // ==========================================
-// UPGRADED REBIRTH SYSTEM (Modals, Max-Buy, Effects)
+// UPGRADED REBIRTH SYSTEM (Resets Upgrades, +0.05x Multi)
 // ==========================================
 
 // --- Inject Rebirth Styles ---
@@ -108,7 +108,7 @@ rebirthStyles.innerHTML = `
         transform: rotate(90deg);
     }
 
-    /* Shared Rebirth Styles from original */
+    /* Shared Rebirth Styles */
     .rebirth-sub-tabs { display: flex; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1); }
     .rebirth-sub-tab { flex: 1; padding: 15px; text-align: center; font-weight: 800; font-size: 1.1rem; cursor: pointer; color: rgba(255,255,255,0.5); transition: 0.2s; border-bottom: 3px solid transparent; }
     .rebirth-sub-tab.active { color: #fff; background: rgba(255,255,255,0.08); border-bottom: 3px solid #ffb3c6; }
@@ -143,19 +143,18 @@ document.head.appendChild(rebirthStyles);
 
 // --- Inject Toggle Button and Modal ---
 function initRebirthUI() {
-    // Inject the Floating Open Button
+    if (document.getElementById('open-rebirth-btn')) return;
+
     const openBtn = document.createElement('button');
     openBtn.id = 'open-rebirth-btn';
     openBtn.innerHTML = '✨ Ascension';
     openBtn.onclick = toggleRebirthModal;
     document.body.appendChild(openBtn);
 
-    // Inject the Modal Wrapper
     const modalOverlay = document.createElement('div');
     modalOverlay.id = 'rebirth-modal-overlay';
     modalOverlay.className = 'rebirth-modal-overlay';
     
-    // Clicking outside the modal closes it
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) toggleRebirthModal();
     });
@@ -176,14 +175,14 @@ function initRebirthUI() {
                 <div class="rebirth-hero-card">
                     <div class="rebirth-hero-icon">👼</div>
                     <div class="rebirth-hero-title">Ascension</div>
-                    <div class="rebirth-hero-desc">Reset your squishes and upgrades to gain permanent Multipliers! You will automatically buy as many Rebirths as you can afford.</div>
+                    <div class="rebirth-hero-desc">Gain permanent +0.05x Multipliers for each rebirth! Rebirthing resets your score and all upgrades.</div>
                     <button id="rebirth-btn" class="rebirth-action-btn" onclick="triggerRebirth()">Perform Rebirth</button>
                 </div>
 
                 <div class="rebirth-stats-grid">
                     <div class="rebirth-stat-box">
                         <div class="rebirth-stat-label">Current Multi</div>
-                        <div class="rebirth-stat-value" id="rebirth-mult-display">+0.0x</div>
+                        <div class="rebirth-stat-value" id="rebirth-mult-display">+0.00x</div>
                     </div>
                     <div class="rebirth-stat-box">
                         <div class="rebirth-stat-label">Total Owned</div>
@@ -196,7 +195,7 @@ function initRebirthUI() {
                 <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(142, 68, 173, 0.25), rgba(41, 128, 185, 0.25));">
                     <div class="rebirth-hero-icon">🌌</div>
                     <div class="rebirth-hero-title">Super Rebirth</div>
-                    <div class="rebirth-hero-desc">Sacrifice 1,000 Rebirths at a time. Resets all progress but grants massive permanent power and Super Currency!</div>
+                    <div class="rebirth-hero-desc">Sacrifice 1,000 Rebirths at a time to grant massive permanent power and Super Currency!</div>
                     <button id="super-rebirth-btn" class="rebirth-action-btn" style="background: linear-gradient(135deg, #8e44ad, #3498db);" onclick="triggerSuperRebirth()">Perform Super Rebirth</button>
                 </div>
 
@@ -223,7 +222,7 @@ function toggleRebirthModal() {
     if (modal.classList.contains('open')) {
         modal.classList.remove('open');
     } else {
-        updateRebirthUIValues(); // Refresh stats before opening
+        updateRebirthUIValues(); 
         modal.classList.add('open');
     }
 }
@@ -244,70 +243,120 @@ function switchRebirthTab(tabName) {
     }
 }
 
-// --- Extend Global State ---
+// --- Extend Global State & Patch Functions ---
 document.addEventListener("DOMContentLoaded", () => {
     initRebirthUI();
 
     if (typeof state !== 'undefined') {
         if (state.rebirths === undefined) state.rebirths = 0;
+        if (state.rebirthActions === undefined) state.rebirthActions = 0;
         if (state.superRebirths === undefined) state.superRebirths = 0;
         if (state.superCurrency === undefined) state.superCurrency = 0;
+    }
+
+    const originalLoadGame = window.loadGame;
+    if (typeof originalLoadGame === 'function') {
+        window.loadGame = function() {
+            originalLoadGame(); 
+            
+            const saved = localStorage.getItem('SquishyDataV3');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.rebirths !== undefined) state.rebirths = parsed.rebirths;
+                if (parsed.rebirthActions !== undefined) state.rebirthActions = parsed.rebirthActions;
+                if (parsed.superRebirths !== undefined) state.superRebirths = parsed.superRebirths;
+                if (parsed.superCurrency !== undefined) state.superCurrency = parsed.superCurrency;
+            }
+            updateRebirthUIValues();
+        };
+    }
+
+    const originalCalculateMultiplier = window.calculateMultiplier;
+    if (typeof originalCalculateMultiplier === 'function') {
+        window.calculateMultiplier = function() {
+            originalCalculateMultiplier(); 
+            
+            let skinCount = 0;
+            for (let skin in state.unlockedSkins) {
+                if (state.unlockedSkins[skin]) skinCount++;
+            }
+            
+            const normalBonus = (state.rebirths || 0) * 0.05;
+            const superBonus = (state.superRebirths || 0) * 25;
+            
+            currentMultiplier = 1 + (skinCount * 0.25) + normalBonus + superBonus;
+            
+            const multiplierDisplay = document.getElementById('multiplier-display');
+            if (multiplierDisplay) {
+                multiplierDisplay.innerText = `${currentMultiplier.toFixed(2)}x Total Multiplier`;
+            }
+        };
     }
 
     const originalUpdateUI = window.updateUI;
     if (typeof originalUpdateUI === 'function') {
         window.updateUI = function() {
             originalUpdateUI();
-            updateRebirthUIValues(); // Keeps modal buttons updated as you click
+            updateRebirthUIValues(); 
         };
     }
+
+    if (typeof calculateMultiplier === 'function') calculateMultiplier();
+    if (typeof recalculateSPS === 'function') recalculateSPS();
     updateRebirthUIValues();
 });
 
-// --- Multi-Buy Math Functions ---
-function calculateMaxRebirths() {
-    let affordableCount = 0;
-    let totalCost = 0;
-    let simulatedScore = state.score;
-    let tempRebirths = state.rebirths;
+// --- Helper: Get Current Unit Cost ---
+function getCurrentUnitCost() {
+    const actions = state.rebirthActions || 0;
+    let cost = Math.floor(10000 * Math.pow(1.15, actions));
+    return Math.min(cost, 1000000000); 
+}
 
-    while (true) {
-        let nextCost = Math.floor(10000 * Math.pow(1.15, tempRebirths));
-        if (simulatedScore >= nextCost) {
-            simulatedScore -= nextCost;
-            totalCost += nextCost;
-            affordableCount++;
-            tempRebirths++;
-        } else {
-            break;
-        }
-    }
-    return { count: affordableCount, cost: totalCost };
+// --- Multi-Buy Calculation ---
+function calculateMaxRebirths() {
+    const unitCost = getCurrentUnitCost();
+    const affordableCount = Math.floor(state.score / unitCost);
+    const totalCost = affordableCount * unitCost;
+
+    return { count: affordableCount, cost: totalCost, unitCost: unitCost };
 }
 
 function calculateMaxSuperRebirths() {
-    let affordableCount = Math.floor(state.rebirths / 1000);
-    return affordableCount;
+    return Math.floor(state.rebirths / 1000);
 }
 
-// --- Trigger Actions & Effects ---
+// --- CORE FIX: Wipe Upgrades Mechanic ---
+function wipeUpgradesForRebirth() {
+    // Erase all upgrade tiers[cite: 6]
+    if (state.upgrades) {
+        for (let upgradeId in state.upgrades) {
+            state.upgrades[upgradeId] = 0;
+        }
+    }
+    
+    // Hard reset base power values
+    state.clickPower = 1;
+    state.sps = 0;
+}
+
+// --- Actions & Effects ---
 function triggerRebirth() {
     const maxData = calculateMaxRebirths();
     
     if (maxData.count > 0) {
-        // Play Visual Effect
         playFlashEffect('white', 'ASCENSION!');
 
-        // Apply Costs and Rewards
-        state.score -= maxData.cost;
+        // Consume score and add rebirth stats
+        state.score = 0; // True prestige sets score to 0
         state.rebirths += maxData.count;
-        
-        // Wipe Upgrades
-        if (typeof UPGRADES_DATA !== 'undefined') {
-            UPGRADES_DATA.forEach(u => state.upgrades[u.id] = 0);
-        }
+        state.rebirthActions = (state.rebirthActions || 0) + 1;
 
-        // Refresh Game State
+        // Reset the upgrades and baseline power 
+        wipeUpgradesForRebirth();
+
+        // Re-trigger global game recalculations immediately
+        if (typeof calculateMultiplier === 'function') calculateMultiplier();
         if (typeof recalculateSPS === 'function') recalculateSPS();
         if (typeof renderUpgrades === 'function') renderUpgrades();
         updateRebirthUIValues();
@@ -320,21 +369,17 @@ function triggerSuperRebirth() {
     const affordable = calculateMaxSuperRebirths();
 
     if (affordable > 0) {
-        // Play Massive Visual Effect
         playFlashEffect('radial-gradient(circle, #ff00ff, #00ffff, #1a237e)', 'SUPER REBIRTH!');
 
-        // Reset Everything
-        state.score = 0;
-        state.rebirths -= (affordable * 1000); // Deduct the rebirths used
-        if (typeof UPGRADES_DATA !== 'undefined') {
-            UPGRADES_DATA.forEach(u => state.upgrades[u.id] = 0);
-        }
-
-        // Grant Super Rewards
+        state.rebirths -= (affordable * 1000); 
         state.superRebirths += affordable;
         state.superCurrency += affordable; 
+        
+        // Super rebirths also count as a massive reset
+        state.score = 0;
+        wipeUpgradesForRebirth();
 
-        // Refresh Game State
+        if (typeof calculateMultiplier === 'function') calculateMultiplier();
         if (typeof recalculateSPS === 'function') recalculateSPS();
         if (typeof renderUpgrades === 'function') renderUpgrades();
         updateRebirthUIValues();
@@ -350,17 +395,14 @@ function playFlashEffect(background, text) {
     flash.style.background = background;
     flash.innerText = text;
     
-    // Add transition directly
     flash.style.transition = 'opacity 1.5s cubic-bezier(0.165, 0.84, 0.44, 1)';
     document.body.appendChild(flash);
 
-    // Trigger fade out after a tiny delay to ensure transition applies
     setTimeout(() => {
         flash.style.opacity = '0';
         flash.style.transform = 'scale(1.2)';
     }, 50);
 
-    // Remove element completely after animation
     setTimeout(() => {
         flash.remove();
     }, 1550);
@@ -372,35 +414,42 @@ function updateRebirthUIValues() {
 
     // --- NORMAL REBIRTH ---
     const maxNormalData = calculateMaxRebirths();
-    const normalBonus = state.rebirths * 0.1;
-    const nextSingleCost = Math.floor(10000 * Math.pow(1.15, state.rebirths));
+    const normalBonus = state.rebirths * 0.05;
 
-    document.getElementById('rebirth-mult-display').innerText = `+${normalBonus.toFixed(1)}x`;
-    document.getElementById('rebirth-count-display').innerText = state.rebirths.toLocaleString();
+    const multDisp = document.getElementById('rebirth-mult-display');
+    const countDisp = document.getElementById('rebirth-count-display');
+    if (multDisp) multDisp.innerText = `+${normalBonus.toFixed(2)}x`;
+    if (countDisp) countDisp.innerText = state.rebirths.toLocaleString();
 
     const rebirthBtn = document.getElementById('rebirth-btn');
-    if (maxNormalData.count > 0) {
-        rebirthBtn.innerText = `Buy Max (${maxNormalData.count}) for ${maxNormalData.cost.toLocaleString()} Squishes`;
-        rebirthBtn.classList.remove('disabled');
-    } else {
-        rebirthBtn.innerText = `Need ${nextSingleCost.toLocaleString()} Squishes`;
-        rebirthBtn.classList.add('disabled');
+    if (rebirthBtn) {
+        if (maxNormalData.count > 0) {
+            rebirthBtn.innerText = `Buy Max (${maxNormalData.count.toLocaleString()}) for ${maxNormalData.cost.toLocaleString()} Squishes`;
+            rebirthBtn.classList.remove('disabled');
+        } else {
+            rebirthBtn.innerText = `Need ${maxNormalData.unitCost.toLocaleString()} Squishes`;
+            rebirthBtn.classList.add('disabled');
+        }
     }
 
     // --- SUPER REBIRTH ---
     const maxSuper = calculateMaxSuperRebirths();
     const superBonus = state.superRebirths * 25;
 
-    document.getElementById('super-mult-display').innerText = `+${superBonus}x`;
-    document.getElementById('super-currency-display').innerText = `${state.superCurrency} 🌀`;
+    const sMultDisp = document.getElementById('super-mult-display');
+    const sCurrDisp = document.getElementById('super-currency-display');
+    if (sMultDisp) sMultDisp.innerText = `+${superBonus}x`;
+    if (sCurrDisp) sCurrDisp.innerText = `${state.superCurrency} 🌀`;
 
     const superBtn = document.getElementById('super-rebirth-btn');
-    if (maxSuper > 0) {
-        superBtn.innerText = `Buy Max (${maxSuper}) for ${(maxSuper * 1000).toLocaleString()} Rebirths`;
-        superBtn.classList.remove('disabled');
-    } else {
-        const needed = 1000 - (state.rebirths % 1000);
-        superBtn.innerText = `Need ${needed.toLocaleString()} More Rebirths`;
-        superBtn.classList.add('disabled');
+    if (superBtn) {
+        if (maxSuper > 0) {
+            superBtn.innerText = `Buy Max (${maxSuper.toLocaleString()}) for ${(maxSuper * 1000).toLocaleString()} Rebirths`;
+            superBtn.classList.remove('disabled');
+        } else {
+            const needed = 1000 - (state.rebirths % 1000);
+            superBtn.innerText = `Need ${needed.toLocaleString()} More Rebirths`;
+            superBtn.classList.add('disabled');
+        }
     }
 }
