@@ -468,7 +468,7 @@
 
         // Populate initial state based on shop.js
         UPGRADES_DATA.forEach(u => state.upgrades[u.id] = 0);
-        SKINS_DATA.forEach(s => state.unlockedSkins[s.id] = (s.cost === 0));
+        SKINS_DATA.forEach(s => state.unlockedSkins[s.id] = (s.cost === 0 && !s.isExclusive));
 
         // Derived stats (not saved directly to avoid tampering bugs)
         let totalSPS = 0;
@@ -659,15 +659,20 @@ function updateUI() {
 
                 let statusText = isEquipped ? '✨ Equipped' : (isUnlocked ? '👕 Click to Equip' : `🛒 ${formatNumber(skin.cost)}`);
 
-                card.innerHTML = `
-                    <div class="skin-preview" style="background: ${skin.css}"></div>
-                    <div class="card-info">
-                        <div class="card-name">${skin.name}</div>
-                        <div class="card-cost" id="status-${skin.id}" style="${isUnlocked ? 'color: var(--secondary)' : ''}">${statusText}</div>
-                        <div class="card-desc">Unlocking grants +0.25x Multiplier!</div>
-                    </div>
-                    <div class="card-badge">${isUnlocked ? '🔓' : '🔒'}</div>
-                `;
+                // Dynamically check if the skin has a custom multiplier perk
+const multiplierText = (skin.isExclusive && skin.perkMult) 
+    ? `Exclusive Perk: +${skin.perkMult}x Multiplier!` 
+    : `Unlocking grants +0.25x Multiplier!`;
+
+card.innerHTML = `
+    <div class="skin-preview" style="background: ${skin.css}"></div>
+    <div class="card-info">
+        <div class="card-name">${skin.name}</div>
+        <div class="card-cost" id="status-${skin.id}" style="${isUnlocked ? 'color: var(--secondary)' : ''}">${statusText}</div>
+        <div class="card-desc">${multiplierText}</div>
+    </div>
+    <div class="card-badge">${isUnlocked ? '🔓' : '🔒'}</div>
+`;
                 skinsPanel.appendChild(card);
             });
         }
