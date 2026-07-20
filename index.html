@@ -761,15 +761,16 @@ function updateUI() {
 function formatNumber(num) {
     if (num < 1000) return Math.floor(num).toString();
     
-    const suffixes = ["", "k", "m", "b", "t", "qa", "qi", "sx", "sp", "oc", "no", "dc"];
+    // Expanded suffix array to handle Ud, Dd, Td, and beyond
+    const suffixes = ["", "k", "m", "b", "t", "qa", "qi", "sx", "sp", "oc", "no", "dc", "ud", "dd", "td", "qd", "qid", "sxd", "spd", "ocd", "nod", "vg"];
     const suffixIndex = Math.floor(Math.log10(num) / 3);
     
-    // Safety check in case numbers get impossibly large
-    if (suffixIndex >= suffixes.length) return "Infinity"; 
+    // Fallback to scientific notation instead of "Infinity" if max suffix is exceeded
+    if (suffixIndex >= suffixes.length) return num.toExponential(2); 
     
     const scaledNum = num / Math.pow(10, suffixIndex * 3);
     
-    // Fix to 2 decimal places and remove trailing zeros (e.g., 10.00k -> 10k)
+    // Fix to 2 decimal places and remove trailing zeros
     return scaledNum.toFixed(2).replace(/\.00$/, '') + suffixes[suffixIndex];
 }
 

@@ -1,5 +1,5 @@
 // ==========================================
-// UPGRADED REBIRTH SYSTEM (Geometric Scaling, 0.025x / 100x Multis, Resets)
+// UPGRADED REBIRTH SYSTEM (Geometric Scaling, 0.10x / 250x Multis, Resets)
 // ==========================================
 
 // --- Inject Rebirth Styles ---
@@ -171,7 +171,6 @@ function formatShort(num) {
     const suffixIndex = Math.floor(Math.log10(num) / 3);
     if (suffixIndex >= suffixes.length) return "Infinity"; 
     const scaledNum = num / Math.pow(10, suffixIndex * 3);
-    // Format to 1 decimal place, stripping trailing zero (e.g. 15.0k -> 15k, 45.3k -> 45.3k)
     return scaledNum.toFixed(1).replace(/\.0$/, '') + suffixes[suffixIndex]; 
 }
 
@@ -209,7 +208,7 @@ function initRebirthUI() {
                 <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(255, 117, 140, 0.15), rgba(255, 126, 179, 0.05));">
                     <div class="rebirth-hero-icon">👼</div>
                     <div class="rebirth-hero-title">Ascension</div>
-                    <div class="rebirth-hero-desc">Gain permanent +0.025x Multipliers for each rebirth! Rebirthing completely resets your score and upgrades. Cost scales by 1.05x per total rebirth.</div>
+                    <div class="rebirth-hero-desc">Gain permanent +0.10x Multipliers for each rebirth! Rebirthing completely resets your score and upgrades. Cost scales by 1.02x per total rebirth.</div>
                     <button id="rebirth-btn" class="rebirth-action-btn btn-normal" onclick="triggerRebirth()">Perform Rebirth</button>
                 </div>
 
@@ -229,7 +228,7 @@ function initRebirthUI() {
                 <div class="rebirth-hero-card" style="background: linear-gradient(135deg, rgba(142, 68, 173, 0.15), rgba(52, 152, 219, 0.05));">
                     <div class="rebirth-hero-icon">🌌</div>
                     <div class="rebirth-hero-title">Super Rebirth</div>
-                    <div class="rebirth-hero-desc">Sacrifice 1m Rebirths at a time to grant massive permanent power (+100x) and Super Currency! Resets Rebirths, Upgrades, and Skins.</div>
+                    <div class="rebirth-hero-desc">Sacrifice 10k Rebirths at a time to grant massive permanent power (+250x) and Super Currency! Resets Rebirths, Upgrades, and Skins.</div>
                     <button id="super-rebirth-btn" class="rebirth-action-btn btn-super" onclick="triggerSuperRebirth()">Perform Super Rebirth</button>
                 </div>
 
@@ -315,9 +314,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
             
-            // Adjusted multipliers: +0.025x per Normal, +100x per Super
-            const normalBonus = (state.rebirths || 0) * 0.025;
-            const superBonus = (state.superRebirths || 0) * 100;
+            // Buffed multipliers: +0.10x per Normal, +250x per Super
+            const normalBonus = (state.rebirths || 0) * 0.10;
+            const superBonus = (state.superRebirths || 0) * 250;
             
             currentMultiplier = 1 + (skinCount * 0.25) + normalBonus + superBonus;
             
@@ -343,8 +342,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- Geometric Multi-Buy Calculation for Normal Rebirths ---
 function calculateMaxRebirths() {
-    const base = 15000;
-    const r = 1.05;
+    const base = 10000; // Buffed: Reduced from 15000
+    const r = 1.02; // Buffed: Reduced scaling from 1.05 to 1.02
     const currentR = state.rebirths || 0;
     
     // Cost of the next single rebirth based on total existing rebirths
@@ -374,9 +373,9 @@ function wipeUpgradesForRebirth() {
     state.sps = 0;
 }
 
-// 1m Rebirths per Super Rebirth
+// 10k Rebirths per Super Rebirth (Buffed from 1m/100k)
 function calculateMaxSuperRebirths() {
-    return Math.floor(state.rebirths / 100000);
+    return Math.floor(state.rebirths / 10000);
 }
 
 // --- Actions & Effects ---
@@ -459,7 +458,7 @@ function updateRebirthUIValues() {
 
     // --- NORMAL REBIRTH ---
     const maxNormalData = calculateMaxRebirths();
-    const normalBonus = state.rebirths * 0.025; // Updated to 0.025x
+    const normalBonus = state.rebirths * 0.10; // Buffed to 0.10x
 
     const multDisp = document.getElementById('rebirth-mult-display');
     const countDisp = document.getElementById('rebirth-count-display');
@@ -479,7 +478,7 @@ function updateRebirthUIValues() {
 
     // --- SUPER REBIRTH ---
     const maxSuper = calculateMaxSuperRebirths();
-    const superBonus = state.superRebirths * 100; // Updated to 100x
+    const superBonus = state.superRebirths * 250; // Updated to 250x
 
     const sMultDisp = document.getElementById('super-mult-display');
     const sCurrDisp = document.getElementById('super-currency-display');
@@ -489,10 +488,10 @@ function updateRebirthUIValues() {
     const superBtn = document.getElementById('super-rebirth-btn');
     if (superBtn) {
         if (maxSuper > 0) {
-            superBtn.innerText = `Buy Max (${formatShort(maxSuper)}) for ${formatShort(maxSuper * 100000)} Rebirths`;
+            superBtn.innerText = `Buy Max (${formatShort(maxSuper)}) for ${formatShort(maxSuper * 10000)} Rebirths`;
             superBtn.classList.remove('disabled');
         } else {
-            const needed = 100000 - (state.rebirths % 100000);
+            const needed = 10000 - (state.rebirths % 10000);
             superBtn.innerText = `Need ${formatShort(needed)} More Rebirths`;
             superBtn.classList.add('disabled');
         }
