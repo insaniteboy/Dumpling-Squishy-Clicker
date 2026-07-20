@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dumpling Squishy Clicker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+        :root {
+            --primary: #ffb3c6; /* Lighter pink to pop on dark backgrounds */
+            --secondary: #4ecdc4;
+            --panel-bg: rgba(20, 5, 15, 0.4); /* Dark, highly transparent glass */
+            --dumpling-skin: radial-gradient(circle at 30% 30%, #fff3e0, #ffcc80);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Nunito', sans-serif; }
+
+        body {
+            /* Animated Gradient Background */
+            background: linear-gradient(120deg, #a1c4fd, #c2e9fb, #fdfbfb, #ebedee);
+            background-size: 300% 300%;
+            animation: bgDrift 15s ease infinite;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            color: #333;
+        }
+
+        @keyframes bgDrift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #game-container { display: flex; width: 100%; height: 100%; }
+
+        /* Left Side: The Squishy */
+        .squishy-section {
+            flex: 1;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative;
+        }
+
+        /* Stats Header (Glassmorphism) */
+        .stats-header {
+            text-align: center;
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 20px 50px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-bottom: 50px;
+            z-index: 10;
+        }
+        .stats-header h1 { font-size: 3rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .stats-header p { font-size: 1.3rem; color: #eee; font-weight: 800; margin-top: 5px; }
+        .multiplier-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* The Dumpling 2.0 */
+        .dumpling-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Floor shadow beneath dumpling */
+        .dumpling-shadow {
+            width: 250px; height: 30px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -15px;
+            filter: blur(5px);
+            transition: all 0.15s ease;
+        }
+
+        .dumpling-container {
+            position: relative; cursor: pointer; 
+            width: 350px; height: 240px;
+            background: var(--dumpling-skin);
+            border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
+            box-shadow: 
+                inset -25px -25px 50px rgba(0,0,0,0.15),
+                inset 10px 10px 20px rgba(255,255,255,0.5),
+                0 25px 25px rgba(0,0,0,0.1);
+            display: flex; justify-content: center; align-items: center;
+            transform-origin: bottom center;
+        }
+
+        /* Inner 3D Shine */
+        .dumpling-container::before {
+            content: ''; position: absolute;
+            top: 10px; left: 15%;
+            width: 120px; height: 40px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: rotate(-15deg);
+            pointer-events: none;
+        }
+
+        /* Animations */
+        @keyframes squishAnim {
+            0% { transform: scale(1); }
+            40% { transform: scaleX(1.15) scaleY(0.8) translateY(20px); }
+            100% { transform: scale(1); }
+        }
+        .squishing { animation: squishAnim 0.15s ease-out; }
+        .squishing + .dumpling-shadow { transform: scale(1.2); opacity: 0.8; }
+
+        @keyframes skinPoof {
+            0% { filter: brightness(1) blur(0px); transform: scale(1); }
+            50% { filter: brightness(1.5) blur(3px); transform: scale(1.05); }
+            100% { filter: brightness(1) blur(0px); transform: scale(1); }
+        }
+        .skin-poof-effect { animation: skinPoof 0.5s ease-out; }
+
+        /* Face */
+        .face { position: relative; width: 160px; height: 60px; margin-top: 60px; display: flex; justify-content: space-between; align-items: center; z-index: 2; pointer-events: none; }
+        .eye { width: 28px; height: 28px; background: #2d3436; border-radius: 50%; position: relative; }
+        .eye::after { content: ''; position: absolute; top: 5px; left: 5px; width: 12px; height: 12px; background: white; border-radius: 50%; }
+        .mouth { width: 35px; height: 18px; border: 5px solid #2d3436; border-top: none; border-radius: 0 0 35px 35px; margin-top: 10px; }
+        .blush { width: 40px; height: 18px; background: rgba(255, 107, 107, 0.7); border-radius: 50%; position: absolute; top: 35px; filter: blur(5px); }
+        .blush.left { left: -25px; }
+        .blush.right { right: -25px; }
+
+        /* Floating Text */
+        .floating-text {
+            position: absolute; font-size: 1.8rem; font-weight: 900; color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 100;
+        }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-120px) scale(1.5); opacity: 0; } }
+
+        /* Right Side Menus (Glassmorphism) */
+        .right-panel { 
+            width: 450px; 
+            background: var(--panel-bg); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.2); 
+            display: flex; flex-direction: column; 
+            box-shadow: -10px 0 30px rgba(0,0,0,0.2); 
+        }
+        
+        .tabs { display: flex; background: rgba(0,0,0,0.2); border-bottom: 2px solid rgba(255,255,255,0.1); }
+        .tab { flex: 1; padding: 22px; text-align: center; font-weight: 900; font-size: 1.2rem; cursor: pointer; color: rgba(255,255,255,0.5); transition: 0.3s; }
+        .tab.active { color: #fff; background: rgba(255,255,255,0.1); border-bottom: 4px solid var(--primary); }
+        .tab:hover:not(.active) { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+        
+        .panel-content { flex: 1; padding: 20px; overflow-y: auto; display: none; flex-direction: column; gap: 15px; }
+        .panel-content.active { display: flex; }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        /* Cards - Transparent Glass Overlays */
+        .card { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 18px; padding: 15px; display: flex; align-items: center; cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .card:hover { transform: translateY(-4px) scale(1.02); background: rgba(255, 255, 255, 0.15); border-color: var(--primary); }
+        .card.disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(80%); transform: none; border-color: transparent; }
+        .card.equipped { border-color: var(--primary); background: rgba(255, 179, 198, 0.15); box-shadow: 0 0 15px rgba(255, 179, 198, 0.3); }
+        
+        .card-icon { font-size: 2.5rem; margin-right: 15px; width: 65px; height: 65px; display: flex; justify-content: center; align-items: center; border-radius: 14px; background: rgba(0,0,0,0.2); }
+        .card-info { flex: 1; }
+        .card-name { font-size: 1.25rem; font-weight: 800; color: #fff; }
+        .card-cost { font-size: 1rem; color: var(--primary); font-weight: 800; margin-top: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .card-desc { font-size: 0.9rem; color: rgba(255,255,255,0.7); font-weight: 700; }
+        .card-badge { font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.8); }
+        
+        .skin-preview { width: 55px; height: 40px; border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%; margin-right: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.5); }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Left Side -->
+        <div class="squishy-section" id="click-area">
+            <div class="stats-header">
+                <h1 id="score-display">0 Squishes</h1>
+                <p><span id="sps-display">0</span> SPS</p>
+                <div class="multiplier-badge" id="multiplier-display">1.00x Skin Multiplier</div>
+            </div>
+            
+            <div class="dumpling-wrapper">
+                <div class="dumpling-container" id="main-dumpling">
+                    <div class="face">
+                        <div class="blush left"></div>
+                        <div class="eye"></div>
+                        <div class="mouth"></div>
+                        <div class="eye"></div>
+                        <div class="blush right"></div>
+                    </div>
+                </div>
+                <div class="dumpling-shadow"></div>
+            </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="right-panel">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('upgrades')">Upgrades</div>
+                <div class="tab" onclick="switchTab('skins')">Wardrobe</div>
+            </div>
+            <div id="upgrades-panel" class="panel-content active"></div>
+            <div id="skins-panel" class="panel-content"></div>
+        </div>
+    </div>
+
+    <!-- EXTERNAL SCRIPTS -->
+<script src="icon.js"></script>
+<script src="shop.js"></script>
+<script src="rebirth.js"></script>
+    <script src="background.js"></script>
+
+    <!-- MAIN GAME LOGIC -->
+    <script>
+        // --- Dynamic State ---
+        let state = {
+            score: 0,
+            clickPower: 1,
+            equippedSkin: 'classic',
+            upgrades: {},
+            unlockedSkins: {}
+        };
+
+        // Populate initial state based on shop.js
+        UPGRADES_DATA.forEach(u => state.upgrades[u.id] = 0);
+        SKINS_DATA.forEach(s => state.unlockedSkins[s.id] = (s.cost === 0));
+
+        // Derived stats (not saved directly to avoid tampering bugs)
+        let totalSPS = 0;
+        let currentMultiplier = 1;
+
+        // --- DOM Elements ---
+        const scoreDisplay = document.getElementById('score-display');
+        const spsDisplay = document.getElementById('sps-display');
+        const multiplierDisplay = document.getElementById('multiplier-display');
+        const mainDumpling = document.getElementById('main-dumpling');
+        const upgradesPanel = document.getElementById('upgrades-panel');
+        const skinsPanel = document.getElementById('skins-panel');
+        const clickArea = document.getElementById('click-area');
+        const rootVars = document.documentElement;
+
+        // --- Initialization ---
+        function init() {
+            loadGame();
+            calculateMultiplier(); // Set initial multiplier based on skins
+            recalculateSPS();      // Set initial SPS
+            applySkin(state.equippedSkin, false); 
+            renderUpgrades();
+            renderSkins();
+            updateUI();
+            
+            setInterval(gameLoop, 100); 
+            setInterval(saveGame, 5000);
+        }
+
+        // --- Core Mechanics ---
+        mainDumpling.addEventListener('mousedown', (e) => {
+            // Apply Squish Animation CSS
+            mainDumpling.classList.remove('squishing');
+            void mainDumpling.offsetWidth; // Trigger reflow to restart animation
+            mainDumpling.classList.add('squishing');
+
+            // Math: Base Click Power * Multiplier
+            const finalClickPower = state.clickPower * currentMultiplier;
+            state.score += finalClickPower;
+            
+            createFloatingText(e.clientX, e.clientY, `+${finalClickPower.toLocaleString(undefined, {maximumFractionDigits: 1})}`);
+            updateUI();
+            updateButtons();
+        });
+
+        // Clean up squish class so it can be re-triggered rapidly
+        mainDumpling.addEventListener('animationend', (e) => {
+            if(e.animationName === 'squishAnim') {
+                mainDumpling.classList.remove('squishing');
+            }
+        });
+
+        function gameLoop() {
+            if (totalSPS > 0) {
+                state.score += totalSPS / 10; // Loop runs 10x a sec
+                updateUI();
+                if (Math.random() < 0.2) updateButtons(); 
+            }
+        }
+
+        // --- Multiplier & Math System ---
+        function calculateMultiplier() {
+            let count = 0;
+            for (let skin in state.unlockedSkins) {
+                if (state.unlockedSkins[skin]) count++;
+            }
+            // Base 1.0x + 0.25x for every skin unlocked
+            currentMultiplier = 1 + (count * 0.25);
+            multiplierDisplay.innerText = `${currentMultiplier.toFixed(2)}x Skin Multiplier`;
+        }
+
+function recalculateSPS() {
+            let baseSPS = 0;
+            let baseClick = 1; // Default starting click power is 1
+
+            UPGRADES_DATA.forEach(u => {
+                // Add to Auto-SPS
+                if (u.sps !== undefined && u.sps > 0) {
+                    baseSPS += state.upgrades[u.id] * u.sps;
+                }
+                // Add to Click Power
+                if (u.click !== undefined && u.click > 0) {
+                    baseClick += state.upgrades[u.id] * u.click;
+                }
+            });
+
+            // Apply Skin Multipliers to both!
+            totalSPS = baseSPS * currentMultiplier;
+            state.clickPower = baseClick; // This updates the variable your click event uses!
+        }
+
+        // --- UI Updates ---
+        function updateUI() {
+            scoreDisplay.innerText = `${Math.floor(state.score).toLocaleString()} Squishes`;
+            spsDisplay.innerText = totalSPS.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
+        }
+
+        function createFloatingText(x, y, text) {
+            const el = document.createElement('div');
+            el.classList.add('floating-text');
+            el.innerText = text;
+            
+            // Randomize position & colors slightly
+            const offsetX = (Math.random() - 0.5) * 80;
+            el.style.left = `${x + offsetX - 30}px`; 
+            el.style.top = `${y - 40}px`;
+            
+            // Randomly color floating text for fun
+            const colors = ['#ff9a9e', '#fecfef', '#a1c4fd', '#c2e9fb', '#ffb199'];
+            el.style.color = colors[Math.floor(Math.random() * colors.length)];
+            
+            clickArea.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+            if(tabName === 'upgrades') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                upgradesPanel.classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                skinsPanel.classList.add('active');
+            }
+        }
+
+        // --- Upgrades System ---
+        function getCost(baseCost, count) {
+            return Math.floor(baseCost * Math.pow(1.15, count));
+        }
+
+        function renderUpgrades() {
+            upgradesPanel.innerHTML = '';
+            UPGRADES_DATA.forEach((u) => {
+                const count = state.upgrades[u.id];
+                const currentCost = getCost(u.baseCost, count);
+                
+                const card = document.createElement('div');
+                card.className = `card ${state.score < currentCost ? 'disabled' : ''}`;
+                card.id = `upg-${u.id}`;
+                card.onclick = () => buyUpgrade(u.id);
+
+                // Show base SPS visually, but inform player of multiplier indirectly
+                card.innerHTML = `
+                    <div class="card-icon">${u.icon}</div>
+                    <div class="card-info">
+                        <div class="card-name">${u.name}</div>
+                        <div class="card-cost" id="cost-${u.id}">🛒 ${currentCost.toLocaleString()}</div>
+                        <div class="card-desc">${u.desc}</div>
+                    </div>
+                    <div class="card-badge" id="count-${u.id}">${count}</div>
+                `;
+                upgradesPanel.appendChild(card);
+            });
+        }
+
+        function buyUpgrade(id) {
+            const upg = UPGRADES_DATA.find(u => u.id === id);
+            const count = state.upgrades[id];
+            const cost = getCost(upg.baseCost, count);
+
+            if (state.score >= cost) {
+                state.score -= cost;
+                state.upgrades[id]++;
+                recalculateSPS();
+                
+                document.getElementById(`count-${id}`).innerText = state.upgrades[id];
+                document.getElementById(`cost-${id}`).innerText = `🛒 ${getCost(upg.baseCost, state.upgrades[id]).toLocaleString()}`;
+                updateUI();
+                updateButtons();
+            }
+        }
+
+        // --- Skins System ---
+        function renderSkins() {
+            skinsPanel.innerHTML = '';
+            SKINS_DATA.forEach((skin) => {
+                const isUnlocked = state.unlockedSkins[skin.id];
+                const isEquipped = state.equippedSkin === skin.id;
+                const canAfford = state.score >= skin.cost;
+                
+                const card = document.createElement('div');
+                card.className = `card ${!isUnlocked && !canAfford ? 'disabled' : ''} ${isEquipped ? 'equipped' : ''}`;
+                card.id = `skin-${skin.id}`;
+                card.onclick = () => handleSkinClick(skin.id);
+
+                let statusText = isEquipped ? '✨ Equipped' : (isUnlocked ? '👕 Click to Equip' : `🛒 ${skin.cost.toLocaleString()}`);
+
+                card.innerHTML = `
+                    <div class="skin-preview" style="background: ${skin.css}"></div>
+                    <div class="card-info">
+                        <div class="card-name">${skin.name}</div>
+                        <div class="card-cost" id="status-${skin.id}" style="${isUnlocked ? 'color: var(--secondary)' : ''}">${statusText}</div>
+                        <div class="card-desc">Unlocking grants +0.25x Multiplier!</div>
+                    </div>
+                    <div class="card-badge">${isUnlocked ? '🔓' : '🔒'}</div>
+                `;
+                skinsPanel.appendChild(card);
+            });
+        }
+
+        function handleSkinClick(id) {
+            const skin = SKINS_DATA.find(s => s.id === id);
+            const isUnlocked = state.unlockedSkins[id];
+
+            if (isUnlocked && state.equippedSkin !== id) {
+                state.equippedSkin = id;
+                applySkin(id, true);
+                renderSkins();
+            } else if (!isUnlocked && state.score >= skin.cost) {
+                state.score -= skin.cost;
+                state.unlockedSkins[id] = true;
+                state.equippedSkin = id;
+                
+                // Recalculate multiplier & SPS because we unlocked a new skin!
+                calculateMultiplier();
+                recalculateSPS();
+                
+                applySkin(id, true);
+                updateUI();
+                renderSkins();
+            }
+        }
+
+        function applySkin(id, playEffect) {
+            const skin = SKINS_DATA.find(s => s.id === id);
+            if(skin) {
+                rootVars.style.setProperty('--dumpling-skin', skin.css);
+                
+                if(playEffect) {
+                    mainDumpling.classList.remove('skin-poof-effect');
+                    void mainDumpling.offsetWidth; // reflow
+                    mainDumpling.classList.add('skin-poof-effect');
+                    
+                    // Remove class after animation finishes
+                    setTimeout(() => mainDumpling.classList.remove('skin-poof-effect'), 500);
+                }
+            }
+        }
+
+        function updateButtons() {
+            UPGRADES_DATA.forEach(u => {
+                const cost = getCost(u.baseCost, state.upgrades[u.id]);
+                const el = document.getElementById(`upg-${u.id}`);
+                if (el) {
+                    if (state.score >= cost) el.classList.remove('disabled');
+                    else el.classList.add('disabled');
+                }
+            });
+
+            SKINS_DATA.forEach(s => {
+                if (!state.unlockedSkins[s.id]) {
+                    const el = document.getElementById(`skin-${s.id}`);
+                    if (el) {
+                        if (state.score >= s.cost) el.classList.remove('disabled');
+                        else el.classList.add('disabled');
+                    }
+                }
+            });
+        }
+
+        // --- Data Store ---
+        function saveGame() {
+            localStorage.setItem('SquishyDataV3', JSON.stringify(state));
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('SquishyDataV3');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.score !== undefined) state.score = parsed.score;
+                if (parsed.equippedSkin !== undefined) state.equippedSkin = parsed.equippedSkin;
+                
+                if (parsed.upgrades) {
+                    for (let key in parsed.upgrades) {
+                        if (state.upgrades[key] !== undefined) state.upgrades[key] = parsed.upgrades[key];
+                    }
+                }
+                if (parsed.unlockedSkins) {
+                    for (let key in parsed.unlockedSkins) {
+                        if (state.unlockedSkins[key] !== undefined) state.unlockedSkins[key] = parsed.unlockedSkins[key];
+                    }
+                }
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
