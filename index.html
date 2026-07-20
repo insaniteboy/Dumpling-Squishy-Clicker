@@ -6,6 +6,206 @@
     <title>Dumpling Squishy Clicker</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
+/* ==========================================
+   DAILY REWARDS UI - THEMED
+========================================== */
+/* ==========================================
+   DAILY REWARDS UI - THEMED
+========================================== */
+#daily-reward-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Highly transparent overlay to show off the custom background */
+    background: rgba(0, 0, 0, 0.15); 
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+#daily-reward-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.daily-reward-content {
+    /* Upgraded Glassmorphism */
+    background: rgba(30, 10, 20, 0.65); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 183, 197, 0.3);
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+    max-width: 650px;
+    width: 90%;
+}
+
+.daily-reward-content h2 {
+    margin: 0 0 5px 0;
+    font-size: 28px;
+    color: #ffb7c5; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.daily-subtitle {
+    margin: 0 0 20px 0;
+    color: #d8a7b1;
+    font-size: 14px;
+}
+
+.daily-reward-layout {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.days-grid-left {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    flex: 2;
+}
+
+.day-card {
+    background: rgba(35, 15, 25, 0.7);
+    border-radius: 8px;
+    padding: 10px 5px;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.day-card.claimed {
+    opacity: 0.5;
+    background: rgba(20, 10, 15, 0.8);
+}
+
+.day-card.current {
+    border-color: #ffb7c5;
+    background: rgba(90, 40, 65, 0.9);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 183, 197, 0.3);
+}
+
+/* Icons styling for the dumplings */
+.reward-graphics {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: -5px;
+    margin: 5px 0;
+    min-height: 40px;
+}
+
+.reward-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+}
+
+.skin-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.day-label {
+    font-size: 12px;
+    color: #d8a7b1;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+
+.reward-amount {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.day-big-right {
+    flex: 1;
+    display: flex;
+}
+
+.day-card-big {
+    background: linear-gradient(135deg, #ffb7c5, #ff6b8b);
+    border-radius: 12px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid transparent;
+    box-shadow: 0 5px 15px rgba(255, 107, 139, 0.4);
+    color: #4a1c35;
+}
+
+.day-card-big.claimed {
+    opacity: 0.5;
+    background: rgba(50, 20, 30, 0.8);
+    box-shadow: none;
+    color: #fff;
+}
+
+.day-card-big.current {
+    border-color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 183, 197, 0.8);
+    animation: pulseBigReward 2s infinite;
+}
+
+.day-card-big .day-label {
+    color: inherit;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.day-card-big .reward-amount {
+    font-size: 24px;
+    text-shadow: none;
+}
+
+@keyframes pulseBigReward {
+    0% { box-shadow: 0 0 15px rgba(255, 183, 197, 0.6); }
+    50% { box-shadow: 0 0 30px rgba(255, 183, 197, 1); }
+    100% { box-shadow: 0 0 15px rgba(255, 183, 197, 0.6); }
+}
+
+.claim-btn {
+    background: #ffb7c5;
+    color: #4a1c35;
+    border: none;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.claim-btn:hover {
+    background: #ff9eaa;
+    transform: translateY(-2px);
+}
+
+.claim-btn:active {
+    transform: translateY(1px);
+}
         :root {
             --primary: #ffb3c6; /* Lighter pink to pop on dark backgrounds */
             --secondary: #4ecdc4;
@@ -193,6 +393,24 @@
 </head>
 <body>
 
+    <!-- DAILY REWARDS MODAL -->
+<div id="daily-reward-modal" class="hidden">
+    <div class="daily-reward-content">
+        <h2>Daily Rewards</h2>
+        <p class="daily-subtitle">Come back every day for bigger bonuses!</p>
+        
+        <div class="daily-reward-layout">
+            <!-- Days 1-6 will be injected here -->
+            <div id="days-grid-left" class="days-grid-left"></div>
+            
+            <!-- Day 7 will be injected here -->
+            <div id="day-big-right" class="day-big-right"></div>
+        </div>
+
+        <button id="claim-reward-btn" class="claim-btn">Claim Reward</button>
+    </div>
+</div>
+
     <div id="game-container">
         <!-- Left Side -->
         <div class="squishy-section" id="click-area">
@@ -231,9 +449,11 @@
      <script src="loading.js"></script>
     <script src="icon.js"></script>
     <script src="shop.js"></script>
+    <script src="dailyReward.js"></script>
     <script src="rebirth.js"></script>
     <script src="background.js"></script>
     <script src="autoclicker.js"></script>
+    <script src="globalClick.js"></script>
 
     <!-- MAIN GAME LOGIC -->
     <script>
@@ -278,7 +498,7 @@
             setInterval(saveGame, 5000);
         }
 
-        // --- Core Mechanics ---
+// --- Core Mechanics ---
         mainDumpling.addEventListener('mousedown', (e) => {
             // Apply Squish Animation CSS
             mainDumpling.classList.remove('squishing');
