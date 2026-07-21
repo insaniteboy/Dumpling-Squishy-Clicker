@@ -142,6 +142,7 @@ const UPGRADES_DATA = [
     { id: 'absolute_end', name: 'The Absolute End',    icon: '👑', baseCost: 1e60,          sps: 1e42, click: 0, desc: '+1Td SPS' }
 ];
 
+
 // ==========================================
 // SKINS DATA (Hard Mode - 100+ Skins)
 // ==========================================
@@ -150,6 +151,13 @@ const SKINS_DATA = [
     { id: 'ascendant',  name: 'Golden Ascendant',   cost: Infinity, css: 'radial-gradient(circle at 30% 30%, #fffde7, #fbc02d)', isExclusive: true, perkMult: 10.0 },
     { id: 'galactic',   name: 'Galactic Overlord',  cost: Infinity, css: 'radial-gradient(circle at 30% 30%, #81d4fa, #01579b)', isExclusive: true, perkMult: 25.0 },
     { id: 'sourcecode', name: 'The Source Code',    cost: Infinity, css: 'repeating-linear-gradient(0deg, #050505, #00ff66 2px, #000000 4px)', isExclusive: true, perkMult: 100.0 },
+
+    // --- Achievement Skins ---
+    { id: 'ach_cyborg',      name: 'Cyborg',             cost: 0, css: 'radial-gradient(circle at 30% 30%, #bdc3c7, #2c3e50)', isExclusive: true, perkMult: 5.0 },
+    { id: 'ach_golden_mouse',name: 'Golden Mouse',       cost: 0, css: 'radial-gradient(circle at 30% 30%, #f1c40f, #e67e22)', isExclusive: true, perkMult: 10.0 },
+    { id: 'ach_diamond',     name: 'Diamond Crust',      cost: 0, css: 'radial-gradient(circle at 30% 30%, #e0f7fa, #00bcd4)', isExclusive: true, perkMult: 25.0 },
+    { id: 'ach_cosmic',      name: 'Cosmic',             cost: 0, css: 'radial-gradient(circle at 30% 30%, #9c27b0, #3f51b5)', isExclusive: true, perkMult: 50.0 },
+    { id: 'ach_mecha',       name: 'Mecha',              cost: 0, css: 'radial-gradient(circle at 30% 30%, #e74c3c, #c0392b)', isExclusive: true, perkMult: 100.0 },
 
     // --- Tier 1: Basic Flavors ---
     { id: 'classic',    name: 'Classic Dough',      cost: 0,        css: 'radial-gradient(circle at 30% 30%, #fff3e0, #ffcc80)' },

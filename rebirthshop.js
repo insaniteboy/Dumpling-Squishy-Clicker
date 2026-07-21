@@ -465,6 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
+// rebirthshop.js
 // 3. Monkey-Patch Multiplier Math to insert Shop Multipliers & Skin Perks
     const originalCalcMulti = window.calculateMultiplier;
     if (typeof originalCalcMulti === 'function') {
@@ -486,8 +487,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // B. Apply Exclusive Equipped Skin Perks
             let activeSkinPerkText = "";
-            if (state.currentSkin && typeof SKINS_DATA !== 'undefined') {
-                const activeSkin = SKINS_DATA.find(s => s.id === state.currentSkin);
+            // 🐛 FIX: Changed state.currentSkin to state.equippedSkin
+            if (state.equippedSkin && typeof SKINS_DATA !== 'undefined') {
+                const activeSkin = SKINS_DATA.find(s => s.id === state.equippedSkin);
                 if (activeSkin && activeSkin.isExclusive && activeSkin.perkMult) {
                     extraBonus += activeSkin.perkMult;
                     activeSkinPerkText = ` | 👑 ${activeSkin.name} Perk: +${activeSkin.perkMult}x`;

@@ -642,6 +642,7 @@
     <script src="rebirthshop.js"></script>
     <script src="background.js"></script>
     <script src="globalClick.js"></script>
+    <script src="achievements.js"></script>
 
     <!-- MAIN GAME LOGIC -->
     <script>
@@ -979,11 +980,9 @@ card.innerHTML = `
                         if (state.upgrades[key] !== undefined) state.upgrades[key] = parsed.upgrades[key];
                     }
                 }
-                if (parsed.unlockedSkins) {
-                    for (let key in parsed.unlockedSkins) {
-                        if (state.unlockedSkins[key] !== undefined) state.unlockedSkins[key] = parsed.unlockedSkins[key];
-                    }
-                }
+if (parsed.unlockedSkins) {
+    state.unlockedSkins = parsed.unlockedSkins;
+}
             }
         }
 
