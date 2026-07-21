@@ -6,9 +6,159 @@
     <title>Dumpling Squishy Clicker</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-/* ==========================================
-   DAILY REWARDS UI - THEMED
-========================================== */
+
+    /* --- UI Button Spacing Fixes --- */
+#open-rebirth-btn {
+    top: 20px !important;
+}
+
+#open-rebirthshop-btn {
+    top: 85px !important; /* Perfectly spaced below Ascension */
+}
+
+#settings-toggle-btn {
+    top: 150px !important; /* Perfectly spaced below Rebirth Shop */
+}
+
+.settings-panel {
+    top: 215px !important; /* Sits right under the Settings button */
+}
+
+/* --- Slim Down the Rebirth Shop --- */
+.rebirth-shop-modal {
+    width: 600px !important; /* Shrunk down from the massive 750px */
+    max-width: 90vw !important;
+    height: 700px !important;
+}
+/* --- Settings Button (Floating) --- */
+#settings-toggle-btn {
+    position: fixed;
+    top: 145px; /* Sits right below the Rebirth Shop button */
+    left: 20px;
+    background: linear-gradient(135deg, #434343 0%, #1c1c1c 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.4);
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    z-index: 99;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#settings-toggle-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    border-color: #fff;
+}
+
+/* Gear Spin Animation */
+#settings-toggle-btn svg {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#settings-toggle-btn.open svg {
+    transform: rotate(180deg);
+}
+
+/* --- Modern Game-Matching Audio Settings Panel --- */
+.settings-panel {
+    position: absolute;
+    top: 215px;
+    left: 20px;
+    width: 240px;
+    background: rgba(35, 20, 35, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    color: #ffffff;
+    font-family: 'Nunito', sans-serif; /* Matches your clean game font */
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Open state toggle class */
+.settings-panel.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.settings-panel h3 {
+    margin: 0 0 14px 0;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.setting-item {
+    margin-bottom: 12px;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Custom Styled Range Sliders matching the game vibe */
+.setting-item input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    outline: none;
+    transition: background 0.2s;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ff477e; /* Matches your pink theme accent */
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(255, 71, 126, 0.6);
+    transition: transform 0.1s;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Animation End State (Visible) */
+.settings-panel.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    padding: 20px;
+    max-height: 400px;
+}
 /* ==========================================
    DAILY REWARDS UI - THEMED
 ========================================== */
@@ -419,6 +569,43 @@
                 <p><span id="sps-display">0</span> SPS</p>
                 <div class="multiplier-badge" id="multiplier-display">1.00x Skin Multiplier</div>
             </div>
+<!-- SETTINGS TOGGLE BUTTON -->
+<button id="settings-toggle-btn" class="gear-btn">
+    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
+    Settings
+</button>
+
+<!-- AUDIO SETTINGS PANEL (Animated) -->
+<div id="audio-settings-panel" class="settings-panel">
+    <h3>Audio Settings</h3>
+    
+    <div class="setting-item">
+        <div class="setting-label-row">
+            <span>Music Volume</span>
+            <span id="bgm-vol-label">30%</span>
+        </div>
+        <input type="range" id="bgm-volume" min="0" max="100" value="30">
+    </div>
+
+    <div class="setting-item">
+        <div class="setting-label-row">
+            <span>Squish Volume</span>
+            <span id="squish-vol-label">60%</span>
+        </div>
+        <input type="range" id="squish-volume" min="0" max="100" value="60">
+    </div>
+
+    <div class="setting-item">
+        <div class="setting-label-row">
+            <span>Sound Effects</span>
+            <span id="sfx-vol-label">60%</span>
+        </div>
+        <input type="range" id="sfx-volume" min="0" max="100" value="60">
+    </div>
+</div>
             
             <div class="dumpling-wrapper">
                 <div class="dumpling-container" id="main-dumpling">
@@ -448,6 +635,7 @@
     <!-- EXTERNAL SCRIPTS -->
      <script src="loading.js"></script>
     <script src="icon.js"></script>
+    <script src="audioManager.js"></script>
     <script src="shop.js"></script>
     <script src="dailyReward.js"></script>
     <script src="rebirth.js"></script>
@@ -627,12 +815,15 @@ function updateUI() {
             });
         }
 
-        function buyUpgrade(id) {
+function buyUpgrade(id) {
             const upg = UPGRADES_DATA.find(u => u.id === id);
             const count = state.upgrades[id];
             const cost = getCost(upg.baseCost, count);
 
             if (state.score >= cost) {
+                // --- NEW: Play Buy Sound ---
+                if (typeof playSound === 'function') playSound('buy');
+
                 state.score -= cost;
                 state.upgrades[id]++;
                 recalculateSPS();
@@ -641,6 +832,40 @@ function updateUI() {
                 document.getElementById(`cost-${id}`).innerText = `🛒 ${formatNumber(getCost(upg.baseCost, state.upgrades[id]))}`;
                 updateUI();
                 updateButtons();
+            } else {
+                // --- NEW: Play Error Sound ---
+                if (typeof playSound === 'function') playSound('error');
+            }
+        }
+
+        // --- Skins System ---
+        function handleSkinClick(id) {
+            const skin = SKINS_DATA.find(s => s.id === id);
+            const isUnlocked = state.unlockedSkins[id];
+
+            if (isUnlocked && state.equippedSkin !== id) {
+                // Equipping a skin (You could add an 'equip' sound here if you want!)
+                if (typeof playSound === 'function') playSound('buy');
+                state.equippedSkin = id;
+                applySkin(id, true);
+                renderSkins();
+            } else if (!isUnlocked && state.score >= skin.cost) {
+                // --- NEW: Play Buy Sound ---
+                if (typeof playSound === 'function') playSound('buy');
+
+                state.score -= skin.cost;
+                state.unlockedSkins[id] = true;
+                state.equippedSkin = id;
+                
+                calculateMultiplier();
+                recalculateSPS();
+                
+                applySkin(id, true);
+                updateUI();
+                renderSkins();
+            } else if (!isUnlocked && state.score < skin.cost) {
+                // --- NEW: Play Error Sound ---
+                if (typeof playSound === 'function') playSound('error');
             }
         }
 

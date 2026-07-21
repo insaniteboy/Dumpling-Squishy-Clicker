@@ -181,7 +181,10 @@ function initRebirthUI() {
     const openBtn = document.createElement('button');
     openBtn.id = 'open-rebirth-btn';
     openBtn.innerHTML = '✨ Ascension';
-    openBtn.onclick = toggleRebirthModal;
+    openBtn.onclick = (e) => {
+        e.stopPropagation(); // Stops dumpling click
+        toggleRebirthModal();
+    };
     document.body.appendChild(openBtn);
 
     const modalOverlay = document.createElement('div');
@@ -189,7 +192,11 @@ function initRebirthUI() {
     modalOverlay.className = 'rebirth-modal-overlay';
     
     modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) toggleRebirthModal();
+        if (e.target === modalOverlay) {
+            toggleRebirthModal();
+        } else {
+            e.stopPropagation(); // Stops dumpling clicks inside the modal
+        }
     });
 
     modalOverlay.innerHTML = `

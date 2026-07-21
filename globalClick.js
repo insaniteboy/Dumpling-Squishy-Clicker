@@ -13,14 +13,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainDumpling = document.getElementById('main-dumpling');
 
     clickArea.addEventListener('mousedown', (e) => {
-        // Ignore clicks if they hit the Stats Header, the Shop Panel, or the Rebirth Button
+        // Start BGM on the first click anywhere in the click area
+        if (typeof startBGM === 'function') startBGM();
+
+        // Ignore clicks if they hit the Stats Header, the Shop Panel, or ANY floating buttons/menus
         if (
             e.target.closest('.stats-header') || 
             e.target.closest('.right-panel') || 
-            e.target.closest('#open-rebirth-btn')
+            e.target.closest('#open-rebirth-btn') ||
+            e.target.closest('#open-rebirthshop-btn') ||
+            e.target.closest('#settings-toggle-btn') ||
+            e.target.closest('.settings-panel') ||
+            e.target.closest('.rebirth-modal-overlay')
         ) {
             return;
         }
+
+        // --- NEW: Play Squish Sound ---
+        if (typeof playSound === 'function') playSound('squish');
 
         // Apply Squish Animation CSS to the Dumpling
         mainDumpling.classList.remove('squishing');
@@ -37,13 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // If the player clicked the background (NOT the dumpling), pick a random spot ON the dumpling
         if (!e.target.closest('#main-dumpling')) {
-            // Get the dumpling's current size and position on the screen
             const rect = mainDumpling.getBoundingClientRect();
-            
-            // Add a 20px padding so the text doesn't spawn exactly on the invisible edges
             const padding = 20; 
-            
-            // Calculate random X and Y coordinates within the dumpling's bounding box
             textX = rect.left + padding + Math.random() * (rect.width - padding * 2);
             textY = rect.top + padding + Math.random() * (rect.height - padding * 2);
         }

@@ -224,7 +224,10 @@ function initRebirthShopUI() {
     const openBtn = document.createElement('button');
     openBtn.id = 'open-rebirthshop-btn';
     openBtn.innerHTML = '🛍️ Rebirth Shop';
-    openBtn.onclick = toggleRebirthShopModal;
+    openBtn.onclick = (e) => {
+        e.stopPropagation(); // Stops dumpling click
+        toggleRebirthShopModal();
+    };
     document.body.appendChild(openBtn);
 
     // Create Modal Overlay
@@ -233,7 +236,11 @@ function initRebirthShopUI() {
     modalOverlay.className = 'rebirth-modal-overlay';
     
     modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) toggleRebirthShopModal();
+        if (e.target === modalOverlay) {
+            toggleRebirthShopModal();
+        } else {
+            e.stopPropagation(); // Stops dumpling clicks inside the modal
+        }
     });
 
     // Notice the addition of the "rebirth-shop-modal" class for the larger size
