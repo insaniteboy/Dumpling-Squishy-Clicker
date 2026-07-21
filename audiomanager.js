@@ -4,11 +4,11 @@
 // ==========================================
 
 const audioAssets = {
-    bgm: new Audio('assets/bgm.mp3'),
-    squish: new Audio('assets/squish.mp3'),
-    buy: new Audio('assets/buy.mp3'),
-    rebirth: new Audio('assets/rebirth.mp3'),
-    error: new Audio('assets/error.mp3')
+    bgm: new Audio('.assets/bgm.mp3'),
+    squish: new Audio('.assets/squish.mp3'),
+    buy: new Audio('.assets/buy.mp3'),
+    rebirth: new Audio('.assets/rebirth.mp3'),
+    error: new Audio('.assets/error.mp3')
 };
 
 // Default Volume Levels
